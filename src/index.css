@@ -1,0 +1,38 @@
+/* 全局样式 - 仅保留必要的重置 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 自定义滚动条 - 国风风格 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8A96E;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #97724F;
+}
+
+/* 思源宋体加载前使用系统衬线字体 */
+.font-heading {
+  font-family: 'Noto Serif SC', 'SimSun', 'Songti SC', serif;
+}
