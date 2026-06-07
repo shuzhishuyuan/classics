@@ -1,16 +1,26 @@
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 import {
   Box, Flex, Text, Link, HStack,
 } from '@chakra-ui/react'
 
 const navLinks = [
-  { label: '首页', path: '/', active: false },
-  { label: '经典研习', path: '/classics', active: true },
-  { label: '会讲互动', path: '#', active: false },
-  { label: '资源共享', path: '#', active: false },
+  { label: '首页', path: '/' },
+  { label: '经典研习', path: '/classics' },
+  { label: '会讲互动', path: '#' },
+  { label: 'VR数字书院', path: '#' },
+  { label: '资源共享', path: '/resources' },
 ]
 
 export default function Navbar() {
+  const location = useLocation()
+
+  /** 判断当前路由是否匹配导航项 */
+  const isActive = (path: string) => {
+    if (path === '#') return false
+    if (path === '/') return location.pathname === '/'
+    return location.pathname.startsWith(path)
+  }
+
   return (
     <Box
       position="fixed"
@@ -64,31 +74,36 @@ export default function Navbar() {
             color="brand.primary"
             display={{ base: 'none', md: 'block' }}
           >
-            书院
+            数智书院
           </Text>
         </Link>
 
         {/* 全局导航 */}
         <HStack spacing={1} display={{ base: 'none', md: 'flex' }} flexShrink={0}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              as={link.path.startsWith('#') ? undefined : RouterLink}
-              to={link.path}
-              px={3}
-              py={2}
-              borderRadius="md"
-              fontSize="sm"
-              fontWeight={link.active ? 600 : 400}
-              color={link.active ? 'brand.primary' : 'gray.600'}
-              bg={link.active ? 'brand.primary.50' : 'transparent'}
-              _hover={{ bg: 'blackAlpha.50', textDecoration: 'none' }}
-              cursor={link.path.startsWith('#') ? 'not-allowed' : 'pointer'}
-              opacity={link.path.startsWith('#') ? 0.6 : 1}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active = isActive(link.path)
+            const isDisabled = link.path === '#'
+            return (
+              <Link
+                key={link.label}
+                as={isDisabled ? undefined : RouterLink}
+                to={link.path}
+                px={3}
+                py={2}
+                borderRadius="md"
+                fontSize="sm"
+                fontWeight={active ? 700 : 400}
+                color={active ? 'brand.primary' : 'gray.600'}
+                bg={active ? 'blackAlpha.50' : 'transparent'}
+                _hover={{ bg: 'blackAlpha.50', textDecoration: 'none' }}
+                cursor={isDisabled ? 'not-allowed' : 'pointer'}
+                opacity={isDisabled ? 0.6 : 1}
+                transition="all 0.15s"
+              >
+                {link.label}
+              </Link>
+            )
+          })}
         </HStack>
       </Flex>
     </Box>

@@ -22,7 +22,7 @@ echo [2/2] 正在启动开发服务器...
 echo.
 echo ✅ 启动成功！浏览器将自动打开
 echo.
-start http://localhost:5173
+start http://localhost:5174
 npx vite --host
 
 pause
