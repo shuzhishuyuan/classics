@@ -9,21 +9,33 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.2",
-    "@emotion/react": "^11.13.0",
-    "@emotion/styled": "^11.13.0",
-    "framer-motion": "^11.5.0",
-    "fuse.js": "^7.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-player": "^2.16.0",
-    "react-router-dom": "^6.26.0"
+    "@chakra-ui/react": "2.8.2",
+    "@emotion/react": "11.13.0",
+    "@emotion/styled": "11.13.0",
+    "@react-three/drei": "9.106.0",
+    "@react-three/fiber": "8.16.8",
+    "@tiptap/react": "2.4.0",
+    "@tiptap/starter-kit": "2.4.0",
+    "axios": "1.6.8",
+    "framer-motion": "11.5.0",
+    "fuse.js": "7.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-hook-form": "7.51.5",
+    "react-icons": "5.2.1",
+    "react-player": "2.16.0",
+    "react-router-dom": "6.23.1",
+    "zod": "3.23.8",
+    "zustand": "4.5.5"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "typescript": "^5.5.3",
-    "vite": "^5.4.0"
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@vitejs/plugin-react": "4.3.1",
+    "eslint": "8.57.1",
+    "playwright": "^1.62.1",
+    "prettier": "3.2.5",
+    "typescript": "5.4.5",
+    "vite": "5.2.13"
   }
 }

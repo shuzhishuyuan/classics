@@ -168,6 +168,8 @@ export interface Recitation {
 
 export interface Discussion {
   id: string
+  /** 关联的板块 ID：classic-seminar | debate-lab | ritual-practice | co-creation */
+  sectionId: string
   topic: string
   classicId: string
   initiatorId: string
@@ -180,6 +182,10 @@ export interface DiscussionReply {
   userId: string
   content: string
   createdAt: number
+  /** 发帖时的用户快照（避免事后用户信息变更影响显示） */
+  userName?: string
+  userAvatar?: string
+  userRole?: '学生' | '教师' | '家长'
 }
 
 export interface PracticeTask {

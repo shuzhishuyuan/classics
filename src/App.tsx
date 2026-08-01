@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom'
-import { Box } from '@chakra-ui/react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { Box, chakra, shouldForwardProp } from '@chakra-ui/react'
+import { isValidMotionProp, motion } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import ClassicsPage from './pages/ClassicsPage'
@@ -10,15 +11,31 @@ import MyLearningPage from './pages/MyLearningPage'
 import ResourceSharingPage from './pages/ResourceSharingPage'
 import ResourceDetailPage from './pages/ResourceDetailPage'
 import HomePage from './pages/HomePage'
+import DiscussionPage from './pages/DiscussionPage'
+
+const MotionBox = chakra(motion.div, {
+  shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
+})
+
+const pageMotion = {
+  transition: { duration: 0.28, ease: 'easeOut' },
+}
 
 /** 典籍页面专用：带侧边栏的布局 */
 function SidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box display="flex" pt="72px">
       <Sidebar />
-      <Box flex="1" ml={{ base: 0, lg: '220px' }} px={6} pb={6} pt={2}>
+      <MotionBox
+        flex="1"
+        ml={{ base: 0, lg: '220px' }}
+        p={{ base: 4, md: 6 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        {...(pageMotion as any)}
+      >
         {children}
-      </Box>
+      </MotionBox>
     </Box>
   )
 }
@@ -38,11 +55,7 @@ export default function App() {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={
-          <PageLayout>
-            <HomePage />
-          </PageLayout>
-        } />
+        <Route path="/" element={<Navigate to="/classics" replace />} />
         <Route path="/classics" element={
           <SidebarLayout>
             <ClassicsPage />
@@ -56,6 +69,11 @@ export default function App() {
         <Route path="/classics/:id/read/:volumeId/:chapterId" element={
           <SidebarLayout>
             <ReaderPage />
+          </SidebarLayout>
+        } />
+        <Route path="/discussion" element={
+          <SidebarLayout>
+            <DiscussionPage />
           </SidebarLayout>
         } />
         <Route path="/ai" element={

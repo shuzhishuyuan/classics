@@ -1,25 +1,16 @@
 import { Link as RouterLink, useLocation } from 'react-router-dom'
-import {
-  Box, Flex, Text, Link, HStack,
-} from '@chakra-ui/react'
+import { Box, Flex, HStack, Link, Text } from '@chakra-ui/react'
 
 const navLinks = [
   { label: '首页', path: '/' },
   { label: '经典研习', path: '/classics' },
-  { label: '会讲互动', path: '#' },
+  { label: '会讲互动', path: '/discussion' },
   { label: 'VR数字书院', path: '#' },
   { label: '资源共享', path: '/resources' },
 ]
 
 export default function Navbar() {
   const location = useLocation()
-
-  /** 判断当前路由是否匹配导航项 */
-  const isActive = (path: string) => {
-    if (path === '#') return false
-    if (path === '/') return location.pathname === '/'
-    return location.pathname.startsWith(path)
-  }
 
   return (
     <Box
@@ -33,15 +24,7 @@ export default function Navbar() {
       borderColor="blackAlpha.100"
       boxShadow="0 2px 8px rgba(0,0,0,0.04)"
     >
-      <Flex
-        maxW="1400px"
-        mx="auto"
-        h="72px"
-        px={6}
-        align="center"
-        gap={6}
-      >
-        {/* Logo */}
+      <Flex maxW="1400px" mx="auto" h="72px" px={6} align="center" gap={6}>
         <Link
           as={RouterLink}
           to="/"
@@ -65,40 +48,36 @@ export default function Navbar() {
             fontWeight={900}
             fontFamily="serif"
           >
-            書
+            书
           </Box>
-          <Text
-            fontSize="xl"
-            fontWeight={700}
-            fontFamily="heading"
-            color="brand.primary"
-            display={{ base: 'none', md: 'block' }}
-          >
+          <Text fontSize="xl" fontWeight={700} fontFamily="heading" color="brand.primary" display={{ base: 'none', md: 'block' }}>
             数智书院
           </Text>
         </Link>
 
-        {/* 全局导航 */}
         <HStack spacing={1} display={{ base: 'none', md: 'flex' }} flexShrink={0}>
           {navLinks.map((link) => {
-            const active = isActive(link.path)
-            const isDisabled = link.path === '#'
+            const isComingSoon = link.path === '#'
+            const isActive =
+              link.path === '/'
+                ? location.pathname === '/'
+                : !isComingSoon && location.pathname.startsWith(link.path)
+
             return (
               <Link
                 key={link.label}
-                as={isDisabled ? undefined : RouterLink}
+                as={isComingSoon ? undefined : RouterLink}
                 to={link.path}
                 px={3}
                 py={2}
                 borderRadius="md"
                 fontSize="sm"
-                fontWeight={active ? 700 : 400}
-                color={active ? 'brand.primary' : 'gray.600'}
-                bg={active ? 'blackAlpha.50' : 'transparent'}
+                fontWeight={isActive ? 700 : 500}
+                color={isActive ? 'brand.primary' : 'gray.600'}
+                bg={isActive ? 'green.50' : 'transparent'}
                 _hover={{ bg: 'blackAlpha.50', textDecoration: 'none' }}
-                cursor={isDisabled ? 'not-allowed' : 'pointer'}
-                opacity={isDisabled ? 0.6 : 1}
-                transition="all 0.15s"
+                cursor={isComingSoon ? 'not-allowed' : 'pointer'}
+                opacity={isComingSoon ? 0.55 : 1}
               >
                 {link.label}
               </Link>
