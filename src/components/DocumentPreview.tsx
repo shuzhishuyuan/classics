@@ -3,9 +3,8 @@ import {
   Box, Text, VStack, HStack, Flex, Badge, Button, IconButton,
   Divider, SimpleGrid, useToast, Tooltip,
 } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
 import type { ResourceItem } from '../types/resource'
-import { teacherPrepData } from '../data/resourceMockData'
+import CommentSection from './CommentSection'
 
 interface DocumentPreviewProps {
   resource: ResourceItem
@@ -46,18 +45,12 @@ export default function DocumentPreview({ resource }: DocumentPreviewProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const [zoomLevel, setZoomLevel] = useState(100)
   const toast = useToast()
-  const navigate = useNavigate()
 
   const pages = getMockDocumentPages(resource)
   const totalPages = pages.length
   const isPDF = resource.format?.toUpperCase().includes('PDF')
   const isDOCX = resource.format?.toUpperCase().includes('DOCX')
   const fileIcon = isPDF ? '📕' : isDOCX ? '📘' : '📄'
-
-  // 相关资源
-  const relatedResources = teacherPrepData
-    .filter((r) => r.id !== resource.id)
-    .slice(0, 4)
 
   return (
     <HStack spacing={0} align="stretch" h="100%">
@@ -341,34 +334,8 @@ export default function DocumentPreview({ resource }: DocumentPreviewProps) {
           </VStack>
         </Box>
 
-        {/* 相关资源推荐 */}
-        <Box bg="white" borderRadius="xl" border="1px solid" borderColor="blackAlpha.100" p={5}>
-          <Text fontSize="md" fontWeight={700} fontFamily="heading" color="gray.800" mb={4}>
-            相关备课资源
-          </Text>
-          <VStack spacing={3} align="stretch">
-            {relatedResources.map((r) => (
-              <HStack
-                key={r.id}
-                p={2}
-                borderRadius="md"
-                cursor="pointer"
-                _hover={{ bg: 'gray.50' }}
-                onClick={() => navigate(`/resources/${r.id}`)}
-                spacing={3}
-                transition="all 0.15s"
-              >
-                <Text fontSize="2xl" flexShrink={0}>{r.coverEmoji || '📄'}</Text>
-                <Box flex={1} minW={0}>
-                  <Text fontSize="sm" fontWeight={600} color="gray.800" noOfLines={1}>
-                    {r.title}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">{r.format} · {r.subject}</Text>
-                </Box>
-              </HStack>
-            ))}
-          </VStack>
-        </Box>
+        {/* 评论区 */}
+        <CommentSection resourceTitle={resource.title} />
       </Box>
     </HStack>
   )

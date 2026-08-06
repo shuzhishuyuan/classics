@@ -1,28 +1,23 @@
-import { Box, Text, VStack, HStack, Flex } from '@chakra-ui/react'
+import { useState } from 'react'
+import { Box, Text, VStack, HStack } from '@chakra-ui/react'
 import { useAuth } from '../hooks/useAuth'
 import LoginCard from '../components/LoginCard'
+import RegisterCard from '../components/RegisterCard'
 import UserDashboard from '../components/UserDashboard'
 
+type AuthView = 'login' | 'register'
+
 export default function HomePage() {
-  const {
-    user,
-    isLoggedIn,
-    selectedRole,
-    showUserList,
-    availableUsers,
-    selectRole,
-    login,
-    switchRole,
-    logout,
-  } = useAuth()
+  const { user, isLoggedIn, login, register, logout } = useAuth()
+  const [view, setView] = useState<AuthView>('login')
 
   return (
     <Box maxW="1200px" mx="auto">
       {/* ========== 未登录：登录/注册区 ========== */}
       {!isLoggedIn && (
-        <Box py={{ base: 8, md: 16 }}>
+        <Box py={{ base: 8, md: 12 }}>
           {/* 平台标题 */}
-          <VStack spacing={3} mb={12} textAlign="center">
+          <VStack spacing={3} mb={10} textAlign="center">
             <Text
               fontSize={{ base: '4xl', md: '5xl' }}
               fontWeight={900}
@@ -33,27 +28,35 @@ export default function HomePage() {
               <Text as="span" mr={3}>🏛️</Text>
               数智书院
             </Text>
-            <Text fontSize={{ base: 'sm', md: 'md' }} color="gray.500" maxW="600px" lineHeight="1.7">
+            <Text
+              fontSize={{ base: 'sm', md: 'md' }}
+              color="gray.500"
+              maxW="600px"
+              lineHeight="1.7"
+            >
               承书院文脉，育时代新人 · 搭建书院—班级—家庭协同育人的
               传统文化教育数智化平台
             </Text>
           </VStack>
 
-          {/* 三端登录 */}
-          <LoginCard
-            selectedRole={selectedRole}
-            showUserList={showUserList}
-            availableUsers={availableUsers}
-            onSelectRole={selectRole}
-            onLogin={login}
-            onSwitchRole={switchRole}
-          />
+          {/* 登录 / 注册卡片切换 */}
+          {view === 'login' ? (
+            <LoginCard
+              onLogin={login}
+              onSwitchToRegister={() => setView('register')}
+            />
+          ) : (
+            <RegisterCard
+              onRegister={register}
+              onSwitchToLogin={() => setView('login')}
+            />
+          )}
 
           {/* 底部特性说明 */}
           <HStack
             justify="center"
             spacing={{ base: 4, md: 10 }}
-            mt={16}
+            mt={12}
             flexWrap="wrap"
           >
             {[

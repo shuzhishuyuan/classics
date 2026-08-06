@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box, Text, VStack, HStack, SimpleGrid, Flex,
-  Badge, Button, Divider, Avatar, Stat, StatLabel, StatNumber, StatGroup,
+  Badge, Button, Divider, Avatar, Spinner,
 } from '@chakra-ui/react'
 import type { User } from '../hooks/useAuth'
+import { fetchStats } from '../api/learning'
 
 interface UserDashboardProps {
   user: User
@@ -51,34 +53,29 @@ const roleGreeting: Record<string, { title: string; subtitle: string; tips: stri
   },
 }
 
-/** 各角色统计数据 */
-const roleStats: Record<string, { label: string; value: string; icon: string }[]> = {
-  '学生': [
-    { label: '已学典籍', value: '12部', icon: '📖' },
-    { label: '学习时长', value: '38小时', icon: '⏱️' },
-    { label: '诵读打卡', value: '56次', icon: '🎯' },
-    { label: '讨论参与', value: '23条', icon: '💬' },
-  ],
-  '教师': [
-    { label: '已下载资源', value: '45份', icon: '📥' },
-    { label: '授课班级', value: '3个', icon: '🏫' },
-    { label: '课程收藏', value: '28节', icon: '⭐' },
-    { label: '使用课件', value: '67次', icon: '📊' },
-  ],
-  '家长': [
-    { label: '亲子共读', value: '32次', icon: '👨‍👩‍👧' },
-    { label: '打卡记录', value: '89天', icon: '📅' },
-    { label: '成果上传', value: '15份', icon: '📤' },
-    { label: '研学参与', value: '6次', icon: '🗺️' },
-  ],
-}
-
 export default function UserDashboard({ user, onLogout }: UserDashboardProps) {
   const navigate = useNavigate()
+  const [realStats, setRealStats] = useState<any>(null)
+  const roleColor = user.role === '学生' ? '#2C5F2D' : user.role === '教师' ? '#97724F' : '#6B5B4F'
+
+  useEffect(() => {
+    fetchStats().then(res => {
+      if (res.code === 200) setRealStats(res.data)
+    })
+  }, [])
+
   const actions = quickActions[user.role] || quickActions['学生']
   const greeting = roleGreeting[user.role] || roleGreeting['学生']
-  const stats = roleStats[user.role] || roleStats['学生']
-  const roleColor = user.role === '学生' ? '#2C5F2D' : user.role === '教师' ? '#97724F' : '#6B5B4F'
+
+  const stats = realStats
+    ? [
+        { label: '已学典籍', value: `${realStats.enrolledClassics}部`, icon: '📖' },
+        { label: '已完成', value: `${realStats.completedClassics}部`, icon: '✅' },
+        { label: '笔记', value: `${realStats.noteCount}条`, icon: '📝' },
+        { label: '讨论', value: `${realStats.discussionCount ?? 0}条`, icon: '💬' },
+        { label: '诵读', value: `${realStats.recitationCount}次`, icon: '🎙️' },
+      ]
+    : []
 
   return (
     <Box maxW="1000px" mx="auto">
@@ -131,27 +128,31 @@ export default function UserDashboard({ user, onLogout }: UserDashboardProps) {
         </Button>
       </Flex>
 
-      {/* ========== 统计数据 ========== */}
-      <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4} mb={6}>
-        {stats.map((s) => (
-          <Box
-            key={s.label}
-            bg="white"
-            borderRadius="xl"
-            border="1px solid"
-            borderColor="blackAlpha.100"
-            p={4}
-            textAlign="center"
-            _hover={{ boxShadow: 'sm', borderColor: 'brand.light' }}
-            transition="all 0.2s"
-          >
-            <Text fontSize="2xl" mb={1}>{s.icon}</Text>
-            <Text fontSize="2xl" fontWeight={800} color="brand.primary" fontFamily="heading">
-              {s.value}
-            </Text>
-            <Text fontSize="xs" color="gray.500">{s.label}</Text>
-          </Box>
-        ))}
+      {/* ========== 统计数据（真实数据）========== */}
+      <SimpleGrid columns={{ base: 2, md: stats.length }} spacing={4} mb={6}>
+        {!realStats ? (
+          <Box textAlign="center" py={4} gridColumn="1/-1"><Spinner color="brand.primary" size="sm" /></Box>
+        ) : (
+          stats.map((s) => (
+            <Box
+              key={s.label}
+              bg="white"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="blackAlpha.100"
+              p={4}
+              textAlign="center"
+              _hover={{ boxShadow: 'sm', borderColor: 'brand.light' }}
+              transition="all 0.2s"
+            >
+              <Text fontSize="2xl" mb={1}>{s.icon}</Text>
+              <Text fontSize="2xl" fontWeight={800} color="brand.primary" fontFamily="heading">
+                {s.value}
+              </Text>
+              <Text fontSize="xs" color="gray.500">{s.label}</Text>
+            </Box>
+          ))
+        )}
       </SimpleGrid>
 
       {/* ========== 快捷入口 + 今日推荐 ========== */}

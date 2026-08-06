@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { Box, chakra, shouldForwardProp } from '@chakra-ui/react'
 import { isValidMotionProp, motion } from 'framer-motion'
 import Navbar from './components/Navbar'
@@ -55,7 +55,11 @@ export default function App() {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<Navigate to="/classics" replace />} />
+        <Route path="/" element={
+  <PageLayout>
+    <HomePage />
+  </PageLayout>
+} />
         <Route path="/classics" element={
           <SidebarLayout>
             <ClassicsPage />

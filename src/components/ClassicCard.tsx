@@ -8,8 +8,10 @@ import { useLocalStorage } from '../hooks/useLocalStorage'
 import type { Classic, Difficulty, GenreType } from '../types'
 
 interface ClassicCardProps {
-  classic: Classic
+  classic: Classic & { isFavorited?: boolean; isLearning?: boolean }
   viewMode?: 'grid' | 'list'
+  onToggleFavorite?: () => void
+  onToggleLearning?: () => void
 }
 
 /** 体裁类型颜色映射 */
@@ -34,29 +36,28 @@ function DifficultyStars({ level }: { level: Difficulty }) {
   )
 }
 
-export default function ClassicCard({ classic, viewMode = 'grid' }: ClassicCardProps) {
+export default function ClassicCard({ classic, viewMode = 'grid', onToggleFavorite, onToggleLearning }: ClassicCardProps) {
   const navigate = useNavigate()
-  const [favorites, setFavorites] = useLocalStorage<string[]>('favorites', [])
-  const [learned, setLearned] = useLocalStorage<string[]>('learned', [])
-  const isFavorited = favorites.includes(classic.id)
-  const isLearning = learned.includes(classic.id)
+  // fallback: 如果父组件没传状态，用 localStorage
+  const [localFavs, setLocalFavs] = useLocalStorage<string[]>('favorites', [])
+  const [localLearned, setLocalLearned] = useLocalStorage<string[]>('learned', [])
+  const isFavorited = classic.isFavorited ?? localFavs.includes(classic.id)
+  const isLearning = classic.isLearning ?? localLearned.includes(classic.id)
   const [isHovered, setIsHovered] = useState(false)
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setFavorites(prev =>
-      prev.includes(classic.id)
-        ? prev.filter(id => id !== classic.id)
-        : [...prev, classic.id]
+    if (onToggleFavorite) { onToggleFavorite(); return }
+    setLocalFavs(prev =>
+      prev.includes(classic.id) ? prev.filter(id => id !== classic.id) : [...prev, classic.id]
     )
   }
 
   const toggleLearning = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setLearned(prev =>
-      prev.includes(classic.id)
-        ? prev.filter(id => id !== classic.id)
-        : [...prev, classic.id]
+    if (onToggleLearning) { onToggleLearning(); return }
+    setLocalLearned(prev =>
+      prev.includes(classic.id) ? prev.filter(id => id !== classic.id) : [...prev, classic.id]
     )
   }
 

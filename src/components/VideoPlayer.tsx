@@ -4,9 +4,8 @@ import {
   Slider, SliderTrack, SliderFilledTrack, SliderThumb,
   Tooltip, Divider, SimpleGrid, useToast,
 } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
 import type { ResourceItem } from '../types/resource'
-import { featuredCoursesData } from '../data/resourceMockData'
+import CommentSection from './CommentSection'
 
 interface VideoPlayerProps {
   resource: ResourceItem
@@ -44,7 +43,6 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
   const [isMuted, setIsMuted] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const toast = useToast()
-  const navigate = useNavigate()
 
   const totalDuration = resource.duration || '30分钟'
   const totalSeconds = parseInt(totalDuration) * 60 || 1800
@@ -89,11 +87,6 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
   }
 
   const handleVolumeToggle = () => setIsMuted(!isMuted)
-
-  // 相关课程推荐
-  const relatedCourses = featuredCoursesData
-    .filter((c) => c.id !== resource.id)
-    .slice(0, 4)
 
   return (
     <HStack spacing={0} align="stretch" h="100%">
@@ -377,34 +370,8 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
           </VStack>
         </Box>
 
-        {/* 相关课程推荐 */}
-        <Box bg="white" borderRadius="xl" border="1px solid" borderColor="blackAlpha.100" p={5}>
-          <Text fontSize="md" fontWeight={700} fontFamily="heading" color="gray.800" mb={4}>
-            相关课程
-          </Text>
-          <VStack spacing={3} align="stretch">
-            {relatedCourses.map((course) => (
-              <HStack
-                key={course.id}
-                p={2}
-                borderRadius="md"
-                cursor="pointer"
-                _hover={{ bg: 'gray.50' }}
-                onClick={() => navigate(`/resources/${course.id}`)}
-                spacing={3}
-                transition="all 0.15s"
-              >
-                <Text fontSize="2xl" flexShrink={0}>{course.coverEmoji}</Text>
-                <Box flex={1} minW={0}>
-                  <Text fontSize="sm" fontWeight={600} color="gray.800" noOfLines={1}>
-                    {course.title}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">{course.teacher} · {course.duration}</Text>
-                </Box>
-              </HStack>
-            ))}
-          </VStack>
-        </Box>
+        {/* 评论区 */}
+        <CommentSection resourceTitle={resource.title} />
       </Box>
     </HStack>
   )

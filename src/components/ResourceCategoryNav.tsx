@@ -2,15 +2,16 @@ import { HStack, Box, Text, Flex } from '@chakra-ui/react'
 import type { ResourceCategory } from '../types/resource'
 
 interface CategoryNavProps {
-  activeCategory: ResourceCategory
-  onCategoryChange: (category: ResourceCategory) => void
+  activeCategory: ResourceCategory | '用户投稿'
+  onCategoryChange: (category: ResourceCategory | '用户投稿') => void
 }
 
-const categories: { key: ResourceCategory; label: string; icon: string; desc: string }[] = [
+const categories: { key: ResourceCategory | '用户投稿'; label: string; icon: string; desc: string }[] = [
   { key: '名师微课', label: '名师微课', icon: '🎬', desc: '书院文化系列课程' },
   { key: '教师备课', label: '教师备课', icon: '📚', desc: '教学资源与方案' },
   { key: '学生学习', label: '学生学习', icon: '✏️', desc: '自主学习与文化拓展' },
   { key: '亲子共读', label: '亲子共读', icon: '👨‍👩‍👧', desc: '家庭共育与亲子互动' },
+  { key: '用户投稿', label: '用户投稿', icon: '📤', desc: '社区共享资源' },
 ]
 
 export default function ResourceCategoryNav({ activeCategory, onCategoryChange }: CategoryNavProps) {

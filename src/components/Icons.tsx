@@ -77,3 +77,15 @@ export const PauseIcon = (props: any) => (
     <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
   </Icon>
 )
+
+export const PhoneIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" {...props}>
+    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+  </Icon>
+)
+
+export const LockIcon = (props: any) => (
+  <Icon viewBox="0 0 24 24" {...props}>
+    <path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+  </Icon>
+)
