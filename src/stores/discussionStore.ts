@@ -15,12 +15,14 @@ export interface Submission {
 interface DiscussionState {
   votes: Record<string, string>
   checkedRituals: Record<string, boolean>
+  ritualNotes: Record<string, string>
   likedWorks: Record<string, boolean>
   submissions: Submission[]
   /** 评论区数据，按 sectionId 索引 */
   discussions: Record<string, Discussion>
   setVote: (seminarId: string, campId: string) => void
   toggleRitual: (taskId: string) => void
+  setRitualNote: (taskId: string, text: string) => void
   toggleWorkLike: (workId: string) => void
   addSubmission: (submission: Omit<Submission, 'id' | 'createdAt'>) => void
   addComment: (sectionId: string, reply: DiscussionReply) => void
@@ -32,6 +34,7 @@ export const useDiscussionStore = create<DiscussionState>()(
     (set) => ({
       votes: {},
       checkedRituals: {},
+      ritualNotes: {},
       likedWorks: {},
       submissions: [],
       discussions: {},
@@ -47,6 +50,13 @@ export const useDiscussionStore = create<DiscussionState>()(
           checkedRituals: {
             ...state.checkedRituals,
             [taskId]: !state.checkedRituals[taskId],
+          },
+        })),
+      setRitualNote: (taskId, text) =>
+        set((state) => ({
+          ritualNotes: {
+            ...state.ritualNotes,
+            [taskId]: text,
           },
         })),
       toggleWorkLike: (workId) =>
@@ -103,6 +113,7 @@ export const useDiscussionStore = create<DiscussionState>()(
       partialize: (state) => ({
         votes: state.votes,
         checkedRituals: state.checkedRituals,
+        ritualNotes: state.ritualNotes,
         likedWorks: state.likedWorks,
         submissions: state.submissions,
         discussions: state.discussions,
