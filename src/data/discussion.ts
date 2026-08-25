@@ -11,45 +11,35 @@ import {
 } from 'react-icons/fa'
 import type { Discussion } from '../types'
 
-export type DebateDirection = '修身立德' | '勤学善思' | '家国担当' | '社会观察'
 export type CreationTrack = '经典解读' | '诗词创作' | '书画作品' | '文脉故事'
 
 export interface CampOption {
   id: string
   name: string
-  thesis: string
-  votes: number
 }
 
 export interface ClassicSeminar {
   id: string
   title: string
-  source: string
-  academy: string
-  summary: string
-  scene: string
+  background: string
+  question: string
   camps: CampOption[]
-  teacherComment: string
-  featuredViews: string[]
+  hints: string[]
 }
 
 export interface DebateTopic {
   id: string
-  direction: DebateDirection
   schoolLevel: string
   title: string
-  prompt: string
-  guidingQuestions: string[]
-  evidence: string[]
+  context: string
+  task: string
+  materials: string[]
 }
 
 export interface RitualTask {
   id: string
   title: string
-  context: string
-  duration: string
-  steps: string[]
-  evidenceHint: string
+  description: string
 }
 
 export interface CreationWork {
@@ -57,9 +47,7 @@ export interface CreationWork {
   track: CreationTrack
   title: string
   author: string
-  role: '学生' | '教师' | '亲子'
   excerpt: string
-  likes: number
 }
 
 export interface DiscussionMenuItem {
@@ -78,107 +66,84 @@ export const discussionMenu: DiscussionMenuItem[] = [
 export const classicSeminars: ClassicSeminar[] = [
   {
     id: 'zhu-zhang',
-    title: '朱张会讲：为学当如何用功？',
-    source: '岳麓书院',
-    academy: '岳麓书院',
-    summary: '以朱熹、张栻讲论为原型，引导学生理解“讲明义理、切己体察”的书院会讲精神。',
-    scene: '讲堂中，两位先生围绕读书次第、修身工夫与实践养成展开问难，学生需要选择自己的理解立场。',
+    title: '朱张会讲：读书与践行，哪一个应该在前？',
+    background: '朱熹与张栻围绕读书、修身与实践展开讨论。面对同一个问题，他们对学习次序和方法有不同侧重。',
+    question: '理解一个道理之后再去行动，还是先从行动中逐渐理解？',
     camps: [
-      { id: 'principle', name: '先明义理', thesis: '读书应先把经典中的道理辨清，再落实到日常行动。', votes: 36 },
-      { id: 'practice', name: '先从实践', thesis: '学习不能停在理解，要从今日可做的一件小事开始体认。', votes: 29 },
+      { id: 'understand-first', name: '先理解，再行动' },
+      { id: 'practice-first', name: '在行动中理解' },
     ],
-    teacherComment:
-      '两种立场并非对立。书院会讲强调“讲”与“行”相互照亮，学生表达观点时要能回到文本，也能联系生活。',
-    featuredViews: [
-      '我支持“先明义理”，因为不理解为什么做，就容易把修身变成形式。',
-      '我支持“先从实践”，每天整理书桌、按时完成阅读，本身就是治学工夫。',
+    hints: [
+      '先理解、再行动的一方，容易忽略：有些道理只有做了才真正明白。',
+      '在行动中理解的一方，容易忽略：没有基本理解，行动可能走偏。',
     ],
   },
   {
     id: 'ehu',
-    title: '鹅湖之会：读书是求同还是存异？',
-    source: '鹅湖书院会讲传统',
-    academy: '跨书院专题',
-    summary: '借历史上的学术论辩，训练学生尊重差异、依据经典和事实表达观点。',
-    scene: '不同学派围绕修养路径展开讨论。学生需要判断：共同目标重要，还是保留方法差异更重要？',
+    title: '鹅湖之会：学习方法需要统一吗？',
+    background: '面对不同的读书和修养方法，参与者需要判断是否有必要统一学习方法。',
+    question: '共同目标是否意味着必须采用相同路径？',
     camps: [
-      { id: 'common', name: '求其共同', thesis: '会讲应先找到共同的育人目标，再讨论方法差异。', votes: 41 },
-      { id: 'difference', name: '尊重差异', thesis: '真正的讨论要允许不同路径并存，才能激发思辨。', votes: 34 },
+      { id: 'common-principle', name: '应先找到共同原则' },
+      { id: 'keep-different', name: '可以保留不同路径' },
     ],
-    teacherComment:
-      '会讲的价值不在“谁赢”，而在把理由说清楚、把证据摆出来、把对方观点听进去。',
-    featuredViews: [
-      '如果只追求一致，可能会忽略每个人学习方式不同。',
-      '先确认共同目标，讨论才不会变成互相否定。',
+    hints: [
+      '追求共同原则的一方，容易忽略：不同人的起点和节奏并不相同。',
+      '保留不同路径的一方，容易忽略：完全没有共同方向，讨论会各说各话。',
     ],
   },
 ]
 
-export const debateDirections: DebateDirection[] = ['修身立德', '勤学善思', '家国担当', '社会观察']
-
 export const debateTopics: DebateTopic[] = [
   {
     id: 'profit-righteousness',
-    direction: '修身立德',
     schoolLevel: '初中',
     title: '面对个人利益与班级规则冲突时，应如何取舍？',
-    prompt: '从书院“义利之辨”出发，讨论现代校园生活中的选择。',
-    guidingQuestions: ['什么是“义”？', '规则是否一定高于个人方便？', '有没有兼顾双方的办法？'],
-    evidence: ['《白鹿洞书院揭示》强调“义利之辨”。', '班级公约体现共同生活中的相互尊重。'],
+    context: '从书院“义利之辨”出发，讨论现代校园生活中的选择。',
+    task: '选择一种立场，至少提出一条理由，并回应一条不同意见。',
+    materials: ['什么是“义”，什么是“利”', '规则是否一定高于个人方便', '有没有兼顾双方的办法'],
   },
   {
     id: 'learning-method',
-    direction: '勤学善思',
     schoolLevel: '小学高段',
     title: '背诵经典时，记住原文和理解意思哪个更重要？',
-    prompt: '联系诵读、注释、讨论三种学习方式，形成自己的学习建议。',
-    guidingQuestions: ['只背不懂会有什么问题？', '先懂再背会不会降低韵味？', '如何安排学习顺序？'],
-    evidence: ['朱子读书法重视熟读精思。', '现有经典研习模块提供原文、译文和文化解读。'],
+    context: '联系诵读、注释、讨论三种学习方式，形成自己的学习建议。',
+    task: '选择一种立场，至少提出一条理由，并回应一条不同意见。',
+    materials: ['只背不懂会有什么问题', '先懂再背会不会影响韵味', '如何安排学习顺序'],
   },
   {
     id: 'family-country',
-    direction: '家国担当',
     schoolLevel: '初中',
     title: '“先天下之忧而忧”对今天的中学生意味着什么？',
-    prompt: '从范仲淹与应天书院故事出发，把家国情怀转化为可实践的小行动。',
-    guidingQuestions: ['中学生能承担哪些责任？', '关心公共事务是否离我们很远？', '如何避免空喊口号？'],
-    evidence: ['范仲淹少时在应天书院苦学。', '家国情怀可以体现在社区服务、环境保护和同伴互助中。'],
+    context: '从范仲淹与应天书院的故事出发，把家国情怀转化为可实践的小行动。',
+    task: '选择一种立场，至少提出一条理由，并回应一条不同意见。',
+    materials: ['中学生能承担哪些具体责任', '关心公共事务是否离我们很远', '如何避免空喊口号'],
   },
   {
-    id: 'digital-culture',
-    direction: '社会观察',
+    id: 'digital-video',
     schoolLevel: '高中',
-    title: '传统文化数字化会让文化更鲜活，还是更碎片化？',
-    prompt: '结合数智化书院 App 的设计，评价技术对文化传承的作用。',
-    guidingQuestions: ['数字化解决了哪些问题？', '碎片化风险来自哪里？', '怎样让技术服务育人目标？'],
-    evidence: ['申报书提出避免技术与文化简单拼接。', '会讲互动把观看转化为表达、论证和反馈。'],
+    title: '把传统文化做成短视频，会帮助理解还是造成误读？',
+    context: '越来越多传统文化内容通过短视频、互动展览和数字应用传播。它们降低了接触门槛，但也可能省略必要的历史背景。',
+    task: '选择一种立场，至少提出两条理由，并回应一条不同意见。',
+    materials: ['数字传播是否扩大了接触人群', '内容压缩是否造成语境缺失', '互动形式是否促进了主动学习', '用户能否继续追溯原始资料'],
   },
 ]
 
 export const ritualTasks: RitualTask[] = [
   {
-    id: 'respect-teacher',
-    title: '尊师礼',
-    context: '课前、请教问题、活动汇报等校园场景。',
-    duration: '3天实践',
-    steps: ['课前整理桌面和学习材料', '提问前先说明自己已经思考的部分', '课后用一句话记录老师建议'],
-    evidenceHint: '上传一段实践记录或填写今日反思。',
+    id: 'prepare',
+    title: '会讲准备',
+    description: '阅读材料后，写下一个真正想弄清楚的问题。',
   },
   {
-    id: 'gratitude',
-    title: '感恩礼',
-    context: '家庭共育与亲子共读场景。',
-    duration: '1周实践',
-    steps: ['选择一则先贤家风故事共读', '向家人表达一次具体感谢', '共同完成一张家庭修身任务卡'],
-    evidenceHint: '上传亲子共读照片占位或填写共读心得。',
+    id: 'listen-respond',
+    title: '倾听回应',
+    description: '阅读一位立场不同的同学的观点，先复述对方的理由，再表达不同意见。',
   },
   {
-    id: 'growth',
-    title: '成长礼',
-    context: '班级主题活动或学期成长总结。',
-    duration: '主题活动',
-    steps: ['写下一个需要改进的习惯', '邀请同伴给出一条建议', '一周后回看并更新行动记录'],
-    evidenceHint: '提交成长承诺和复盘记录。',
+    id: 'summarize',
+    title: '讨论整理',
+    description: '会讲结束后，记录自己仍然坚持的观点，以及发生改变的地方。',
   },
 ]
 
@@ -193,38 +158,30 @@ export const creationWorks: CreationWork[] = [
   {
     id: 'work-1',
     track: '经典解读',
-    title: '从“博学之”看我的学习计划',
-    author: '初二学生 林同学',
-    role: '学生',
-    excerpt: '我把“博学、审问、慎思、明辨、笃行”拆成五个学习动作，用来复盘每周的阅读。',
-    likes: 28,
+    title: '《朱张会讲》一页导读',
+    author: '高二（3）班读书小组',
+    excerpt: '我们整理了会讲背景、两种主要观点和仍未解决的三个问题。',
   },
   {
     id: 'work-2',
-    track: '诗词创作',
-    title: '岳麓晨读',
-    author: '语文教师 陈老师',
-    role: '教师',
-    excerpt: '晨钟入林薄，书声过石栏。少年知问道，风露满青衫。',
-    likes: 35,
+    track: '书画作品',
+    title: '岳麓书院匾额文字整理',
+    author: '书法社与历史社共同完成',
+    excerpt: '收录匾额文字、出处及含义说明。',
   },
   {
     id: 'work-3',
-    track: '书画作品',
-    title: '道南正脉临摹卡',
-    author: '亲子共创 周同学家庭',
-    role: '亲子',
-    excerpt: '用书法临摹配合文字说明，理解岳麓书院“道南正脉”的文化含义。',
-    likes: 19,
+    track: '诗词创作',
+    title: '岳麓晨读（学生习作）',
+    author: '初二（1）班 林同学',
+    excerpt: '以晨读为题的一首习作，附上对诗中意象的简短说明。',
   },
   {
     id: 'work-4',
     track: '文脉故事',
     title: '程门立雪新讲',
-    author: '初一学生 何同学',
-    role: '学生',
-    excerpt: '我把尊师重道理解为认真倾听、及时回应和带着准备去请教。',
-    likes: 22,
+    author: '初一（2）班 何同学',
+    excerpt: '把尊师重道理解为认真倾听、及时回应和带着准备去请教。',
   },
 ]
 
@@ -294,7 +251,7 @@ export const seedDiscussions: Discussion[] = [
         userName: '陈文博',
         userAvatar: '👨‍🏫',
         userRole: '教师',
-        content: '关于"传统文化数字化会让文化更鲜活，还是更碎片化"，请同学们结合我们使用这个 App 的体验来谈谈看法。',
+        content: '关于"把传统文化做成短视频，会帮助理解还是造成误读"，请同学们结合自己的体验来谈谈看法。',
         createdAt: now - 6 * DAY,
       },
       {

@@ -1,9 +1,8 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Badge,
   Box,
   Button,
-  ButtonGroup,
   Divider,
   FormControl,
   FormErrorMessage,
@@ -12,7 +11,6 @@ import {
   GridItem,
   HStack,
   Icon,
-  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -21,7 +19,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Progress,
   Select,
   SimpleGrid,
   Stack,
@@ -32,7 +29,6 @@ import {
   Tabs,
   Text,
   Textarea,
-  Tooltip,
   VStack,
   useDisclosure,
   useToast,
@@ -45,29 +41,25 @@ import StarterKit from '@tiptap/starter-kit'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import {
-  FaBookReader,
   FaCheck,
   FaChevronDown,
-  FaChevronRight,
   FaChevronUp,
   FaCommentDots,
   FaHeart,
   FaPaperPlane,
-  FaPlus,
   FaQuoteLeft,
   FaRegHeart,
-  FaUpload,
   FaVoteYea,
 } from 'react-icons/fa'
 import {
   classicSeminars,
   creationTracks,
   creationWorks,
-  debateDirections,
   debateTopics,
   ritualTasks,
   type CreationTrack,
-  type DebateDirection,
+  type CreationWork,
+  type RitualTask,
 } from '../data/discussion'
 import { useDiscussionStore } from '../stores/discussionStore'
 import { useAuth } from '../hooks/useAuth'
@@ -324,13 +316,11 @@ function CommentSection({ sectionId }: { sectionId: string }) {
 
 function SectionShell({
   id,
-  eyebrow,
   title,
   description,
   children,
 }: {
   id: string
-  eyebrow: string
   title: string
   description: string
   children: React.ReactNode
@@ -346,9 +336,6 @@ function SectionShell({
       {...(sectionMotion as any)}
     >
       <Box mb={5}>
-        <Badge colorScheme="green" mb={3}>
-          {eyebrow}
-        </Badge>
         <Text as="h2" fontSize={{ base: 'xl', md: '2xl' }} fontWeight={800} fontFamily="heading" color="gray.800">
           {title}
         </Text>
@@ -368,45 +355,44 @@ function SeminarSection() {
   return (
     <SectionShell
       id="classic-seminar"
-      eyebrow="Classic Seminar"
       title="经典会讲"
-      description="以历史会讲事件为原型，让学生选择观点阵营、表达个人判断，并在名师解读中理解“百家争鸣、教学相长”。"
+      description="从历史上的会讲与论辩出发，阅读相关背景，选择你更认同的学习方式，并说明理由。"
     >
       <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={5}>
         {classicSeminars.map((seminar) => {
           const selectedCamp = votes[seminar.id]
-          const totalVotes = seminar.camps.reduce((sum, camp) => sum + camp.votes + (selectedCamp === camp.id ? 1 : 0), 0)
 
           return (
-            <Box key={seminar.id} bg="white" border="1px solid" borderColor="blackAlpha.100" borderRadius="lg" p={5}>
-              <HStack justify="space-between" align="flex-start" gap={4}>
-                <Box>
-                  <Text fontSize="lg" fontWeight={800} fontFamily="heading">
-                    {seminar.title}
-                  </Text>
-                  <Text mt={1} fontSize="sm" color="gray.500">
-                    {seminar.source} · {seminar.academy}
-                  </Text>
-                </Box>
-                <Icon as={FaBookReader} color="brand.primary" boxSize={5} />
-              </HStack>
+            <Box
+              key={seminar.id}
+              bg="white"
+              border="1px solid"
+              borderColor="blackAlpha.100"
+              borderRadius="lg"
+              p={5}
+              display="flex"
+              flexDirection="column"
+              h="100%"
+            >
+              <Text fontSize="lg" fontWeight={800} fontFamily="heading">
+                {seminar.title}
+              </Text>
 
               <Text mt={4} color="gray.600" lineHeight="1.8">
-                {seminar.summary}
+                {seminar.background}
               </Text>
+
               <Box mt={4} bg="brand.bg" borderRadius="md" p={4}>
                 <HStack align="flex-start" gap={3}>
                   <Icon as={FaQuoteLeft} color="brand.secondary" mt={1} />
-                  <Text fontSize="sm" color="gray.700" lineHeight="1.7">
-                    {seminar.scene}
+                  <Text fontSize="sm" color="gray.700" lineHeight="1.7" fontWeight={600}>
+                    {seminar.question}
                   </Text>
                 </HStack>
               </Box>
 
               <Stack mt={5} spacing={3}>
                 {seminar.camps.map((camp) => {
-                  const adjustedVotes = camp.votes + (selectedCamp === camp.id ? 1 : 0)
-                  const percent = Math.round((adjustedVotes / totalVotes) * 100)
                   const isSelected = selectedCamp === camp.id
 
                   return (
@@ -418,13 +404,8 @@ function SeminarSection() {
                       borderRadius="md"
                       p={4}
                     >
-                      <HStack justify="space-between" align="flex-start" gap={4}>
-                        <Box>
-                          <Text fontWeight={700}>{camp.name}</Text>
-                          <Text mt={1} fontSize="sm" color="gray.600" lineHeight="1.6">
-                            {camp.thesis}
-                          </Text>
-                        </Box>
+                      <HStack justify="space-between" align="center" gap={4}>
+                        <Text fontWeight={700}>{camp.name}</Text>
                         <Button
                           size="sm"
                           leftIcon={<FaVoteYea />}
@@ -435,33 +416,26 @@ function SeminarSection() {
                           {isSelected ? '已选择' : '投票'}
                         </Button>
                       </HStack>
-                      <HStack mt={3} spacing={3}>
-                        <Progress flex="1" value={percent} colorScheme="green" borderRadius="full" />
-                        <Text fontSize="sm" color="gray.600" w="42px" textAlign="right">
-                          {percent}%
-                        </Text>
-                      </HStack>
                     </Box>
                   )
                 })}
               </Stack>
 
-              <Divider my={5} />
-              <Text fontWeight={700} color="brand.primary" mb={2}>
-                名师解读
-              </Text>
-              <Text fontSize="sm" color="gray.600" lineHeight="1.8">
-                {seminar.teacherComment}
-              </Text>
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} mt={4}>
-                {seminar.featuredViews.map((view) => (
-                  <Box key={view} bg="gray.50" borderRadius="md" p={3}>
-                    <Text fontSize="sm" color="gray.700" lineHeight="1.7">
-                      {view}
-                    </Text>
-                  </Box>
-                ))}
-              </SimpleGrid>
+              <Box mt="auto" pt={5}>
+                <Divider mb={5} />
+                <Text fontWeight={700} color="brand.primary" mb={2}>
+                  讨论提示
+                </Text>
+                <VStack align="stretch" spacing={2}>
+                  {seminar.hints.map((hint) => (
+                    <Box key={hint} bg="gray.50" borderRadius="md" p={3}>
+                      <Text fontSize="sm" color="gray.700" lineHeight="1.7">
+                        {hint}
+                      </Text>
+                    </Box>
+                  ))}
+                </VStack>
+              </Box>
             </Box>
           )
         })}
@@ -474,166 +448,154 @@ function SeminarSection() {
 }
 
 function DebateSection({ onOpenSubmit }: { onOpenSubmit: (topicId: string) => void }) {
-  const [direction, setDirection] = useState<DebateDirection>('修身立德')
-  const topics = debateTopics.filter((topic) => topic.direction === direction)
-
   return (
     <SectionShell
       id="debate-lab"
-      eyebrow="Debate Lab"
       title="思辨论辩"
-      description="围绕修身、勤学、家国与社会观察设置分学段议题，帮助学生完成“提出议题—组织论据—发表观点—获得反馈”的训练闭环。"
+      description="围绕真实问题选择立场、陈述理由，并回应不同意见，完成一次讨论。"
     >
-      <ButtonGroup spacing={2} flexWrap="wrap" mb={5}>
-        {debateDirections.map((item) => (
-          <Button
-            key={item}
-            size="sm"
-            variant={direction === item ? 'solid' : 'outline'}
-            colorScheme={direction === item ? 'green' : undefined}
-            onClick={() => setDirection(item)}
-            mb={2}
-          >
-            {item}
-          </Button>
-        ))}
-      </ButtonGroup>
-
-      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={5}>
-        {topics.map((topic) => (
+      <Stack spacing={5}>
+        {debateTopics.map((topic) => (
           <Box key={topic.id} bg="white" border="1px solid" borderColor="blackAlpha.100" borderRadius="lg" p={5}>
-            <HStack justify="space-between" align="flex-start">
-              <Badge colorScheme="orange">{topic.schoolLevel}</Badge>
-              <Icon as={FaChevronRight} color="brand.secondary" />
-            </HStack>
+            <Badge colorScheme="orange">{topic.schoolLevel}</Badge>
             <Text mt={3} fontSize="lg" fontWeight={800} fontFamily="heading">
               {topic.title}
             </Text>
-            <Text mt={2} color="gray.600" lineHeight="1.8">
-              {topic.prompt}
-            </Text>
 
-            <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4} mt={5}>
-              <GridItem>
-                <Text fontWeight={700} color="gray.700" mb={2}>
-                  论点梳理
-                </Text>
-                <VStack align="stretch" spacing={2}>
-                  {topic.guidingQuestions.map((question, index) => (
-                    <HStack key={question} align="flex-start" gap={2}>
-                      <Badge colorScheme="green">Q{index + 1}</Badge>
-                      <Text fontSize="sm" color="gray.600">
-                        {question}
-                      </Text>
-                    </HStack>
-                  ))}
-                </VStack>
-              </GridItem>
-              <GridItem>
-                <Text fontWeight={700} color="gray.700" mb={2}>
-                  论据素材
-                </Text>
-                <VStack align="stretch" spacing={2}>
-                  {topic.evidence.map((item) => (
-                    <HStack key={item} align="flex-start" gap={2}>
-                      <Icon as={FaCheck} color="brand.primary" mt={1} />
-                      <Text fontSize="sm" color="gray.600">
-                        {item}
-                      </Text>
-                    </HStack>
-                  ))}
-                </VStack>
-              </GridItem>
-            </Grid>
-
-            <Button mt={5} leftIcon={<FaPaperPlane />} colorScheme="green" onClick={() => onOpenSubmit(topic.id)}>
-              发表观点
-            </Button>
-          </Box>
-        ))}
-      </SimpleGrid>
-
-      <Divider my={6} />
-      <CommentSection sectionId="debate-lab" />
-    </SectionShell>
-  )
-}
-
-function RitualSection() {
-  const checkedRituals = useDiscussionStore((state) => state.checkedRituals)
-  const toggleRitual = useDiscussionStore((state) => state.toggleRitual)
-
-  return (
-    <SectionShell
-      id="ritual-practice"
-      eyebrow="Ritual Practice"
-      title="礼仪习养"
-      description="把传统书院的仪式规约转化为校园、家庭和班级场景中的可操作任务，突出从知识认知到行为养成。"
-    >
-      <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={5}>
-        {ritualTasks.map((task) => {
-          const isChecked = !!checkedRituals[task.id]
-          return (
-            <Box key={task.id} bg="white" border="1px solid" borderColor="blackAlpha.100" borderRadius="lg" p={5}>
-              <HStack justify="space-between" align="flex-start">
-                <Box>
-                  <Text fontSize="lg" fontWeight={800} fontFamily="heading">
-                    {task.title}
-                  </Text>
-                  <Text mt={1} fontSize="sm" color="gray.500">
-                    {task.duration}
-                  </Text>
-                </Box>
-                <Badge colorScheme={isChecked ? 'green' : 'gray'}>{isChecked ? '已打卡' : '待实践'}</Badge>
-              </HStack>
-              <Text mt={4} fontSize="sm" color="gray.600" lineHeight="1.7">
-                {task.context}
+            <Box mt={4}>
+              <Text fontWeight={700} color="gray.700" fontSize="sm" mb={1}>
+                情境说明
               </Text>
-              <VStack align="stretch" spacing={3} mt={5}>
-                {task.steps.map((step, index) => (
-                  <HStack key={step} align="flex-start" gap={3}>
-                    <Box
-                      w="24px"
-                      h="24px"
-                      borderRadius="full"
-                      bg="brand.bg"
-                      color="brand.primary"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      fontSize="xs"
-                      fontWeight={800}
-                      flexShrink={0}
-                    >
-                      {index + 1}
-                    </Box>
-                    <Text fontSize="sm" color="gray.700">
-                      {step}
+              <Text color="gray.600" lineHeight="1.8">
+                {topic.context}
+              </Text>
+            </Box>
+
+            <Box mt={4}>
+              <Text fontWeight={700} color="gray.700" fontSize="sm" mb={1}>
+                任务
+              </Text>
+              <Text color="gray.600" lineHeight="1.8">
+                {topic.task}
+              </Text>
+            </Box>
+
+            <Box mt={4}>
+              <Text fontWeight={700} color="gray.700" fontSize="sm" mb={2}>
+                可参考的材料方向
+              </Text>
+              <VStack align="stretch" spacing={2}>
+                {topic.materials.map((item) => (
+                  <HStack key={item} align="flex-start" gap={2}>
+                    <Icon as={FaCheck} color="brand.primary" mt={1} />
+                    <Text fontSize="sm" color="gray.600">
+                      {item}
                     </Text>
                   </HStack>
                 ))}
               </VStack>
-              <Box mt={5} bg="gray.50" borderRadius="md" p={3}>
-                <HStack align="flex-start" gap={2}>
-                  <Icon as={FaUpload} color="brand.secondary" mt={1} />
-                  <Text fontSize="sm" color="gray.600">
-                    {task.evidenceHint}
-                  </Text>
-                </HStack>
-              </Box>
-              <Button
-                mt={4}
-                w="full"
-                variant={isChecked ? 'solid' : 'outline'}
-                colorScheme={isChecked ? 'green' : undefined}
-                leftIcon={<FaCheck />}
-                onClick={() => toggleRitual(task.id)}
-              >
-                {isChecked ? '已完成今日打卡' : '完成实践打卡'}
-              </Button>
             </Box>
-          )
-        })}
+
+            <HStack mt={5} spacing={3} flexWrap="wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => document.getElementById('classic-seminar')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                阅读材料
+              </Button>
+              <Button size="sm" leftIcon={<FaPaperPlane />} colorScheme="green" onClick={() => onOpenSubmit(topic.id)}>
+                写下观点
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => document.getElementById('debate-lab-discussion')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                查看讨论
+              </Button>
+            </HStack>
+          </Box>
+        ))}
+      </Stack>
+
+      <Divider my={6} />
+      <Box id="debate-lab-discussion">
+        <CommentSection sectionId="debate-lab" />
+      </Box>
+    </SectionShell>
+  )
+}
+
+function RitualCard({ task }: { task: RitualTask }) {
+  const isChecked = !!useDiscussionStore((state) => state.checkedRituals[task.id])
+  const toggleRitual = useDiscussionStore((state) => state.toggleRitual)
+  const note = useDiscussionStore((state) => state.ritualNotes[task.id]) ?? ''
+  const setRitualNote = useDiscussionStore((state) => state.setRitualNote)
+  const [writing, setWriting] = useState(false)
+
+  return (
+    <Box
+      bg="white"
+      border="1px solid"
+      borderColor="blackAlpha.100"
+      borderRadius="lg"
+      p={5}
+      display="flex"
+      flexDirection="column"
+      h="100%"
+    >
+      <HStack justify="space-between" align="flex-start">
+        <Text fontSize="lg" fontWeight={800} fontFamily="heading">
+          {task.title}
+        </Text>
+        <Badge colorScheme={isChecked ? 'green' : 'gray'}>{isChecked ? '已完成' : '未完成'}</Badge>
+      </HStack>
+      <Text mt={4} fontSize="sm" color="gray.600" lineHeight="1.8">
+        {task.description}
+      </Text>
+
+      <HStack mt="auto" pt={5} spacing={3}>
+        <Button
+          size="sm"
+          flex="1"
+          variant={isChecked ? 'solid' : 'outline'}
+          colorScheme={isChecked ? 'green' : undefined}
+          leftIcon={<FaCheck />}
+          onClick={() => toggleRitual(task.id)}
+        >
+          {isChecked ? '已完成' : '我已完成'}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setWriting((v) => !v)}>
+          {writing ? '收起' : '写下记录'}
+        </Button>
+      </HStack>
+
+      {writing && (
+        <Textarea
+          mt={3}
+          value={note}
+          onChange={(e) => setRitualNote(task.id, e.target.value)}
+          placeholder="写下你的记录…"
+          rows={4}
+          resize="vertical"
+        />
+      )}
+    </Box>
+  )
+}
+
+function RitualSection() {
+  return (
+    <SectionShell
+      id="ritual-practice"
+      title="礼仪习养"
+      description="把会讲的过程拆成准备、倾听、整理三个可以马上行动的小任务。"
+    >
+      <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={5}>
+        {ritualTasks.map((task) => (
+          <RitualCard key={task.id} task={task} />
+        ))}
       </SimpleGrid>
 
       <Divider my={6} />
@@ -646,54 +608,78 @@ function CreationSection({ onOpenSubmit }: { onOpenSubmit: (track: CreationTrack
   const likedWorks = useDiscussionStore((state) => state.likedWorks)
   const toggleWorkLike = useDiscussionStore((state) => state.toggleWorkLike)
   const submissions = useDiscussionStore((state) => state.submissions)
+  const toast = useToast()
+  const [viewingWork, setViewingWork] = useState<CreationWork | null>(null)
 
   const submittedWorks = submissions.filter((item) => item.track)
+
+  const notifyCoEdit = () =>
+    toast({ title: '共同编辑功能即将开放', status: 'info', duration: 2000 })
 
   return (
     <SectionShell
       id="co-creation"
-      eyebrow="Co-creation"
       title="师生共创"
-      description="以经典解读、诗词创作、书画作品、文脉故事四个赛道重构师生共学、共研、共创的数字空间。"
+      description="把对经典的理解做成作品，和同学、老师一起分享、回应与完善。"
     >
-      <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3} mb={5}>
-        {creationTracks.map(({ track, icon }) => (
-          <Button key={track} leftIcon={<Icon as={icon} />} variant="outline" onClick={() => onOpenSubmit(track)}>
-            {track}
-          </Button>
-        ))}
-      </SimpleGrid>
+      <HStack spacing={3} mb={5} flexWrap="wrap">
+        <Button leftIcon={<FaPaperPlane />} colorScheme="green" onClick={() => onOpenSubmit('经典解读')}>
+          发布作品
+        </Button>
+        <Button variant="outline" onClick={notifyCoEdit}>
+          发起共同编辑
+        </Button>
+      </HStack>
 
       <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} spacing={5}>
         {creationWorks.map((work) => {
           const liked = !!likedWorks[work.id]
           return (
-            <Box key={work.id} bg="white" border="1px solid" borderColor="blackAlpha.100" borderRadius="lg" p={5}>
-              <HStack justify="space-between" align="flex-start">
-                <Badge colorScheme="purple">{work.track}</Badge>
-                <Tooltip label={liked ? '取消点赞' : '点赞'}>
-                  <IconButton
-                    aria-label={liked ? '取消点赞' : '点赞'}
-                    icon={liked ? <FaHeart /> : <FaRegHeart />}
-                    size="sm"
-                    colorScheme={liked ? 'red' : undefined}
-                    variant={liked ? 'solid' : 'ghost'}
-                    onClick={() => toggleWorkLike(work.id)}
-                  />
-                </Tooltip>
-              </HStack>
+            <Box
+              key={work.id}
+              bg="white"
+              border="1px solid"
+              borderColor="blackAlpha.100"
+              borderRadius="lg"
+              p={5}
+              display="flex"
+              flexDirection="column"
+              h="100%"
+            >
+              <Badge colorScheme="purple">{work.track}</Badge>
               <Text mt={4} fontWeight={800} fontFamily="heading">
                 {work.title}
               </Text>
               <Text mt={1} fontSize="sm" color="gray.500">
-                {work.author} · {work.role}
+                {work.author}
               </Text>
-              <Text mt={3} fontSize="sm" color="gray.600" lineHeight="1.8">
+              <Text mt={3} fontSize="sm" color="gray.600" lineHeight="1.8" noOfLines={3}>
                 {work.excerpt}
               </Text>
-              <Text mt={4} fontSize="sm" color="gray.500">
-                {work.likes + (liked ? 1 : 0)} 次认可
-              </Text>
+              <HStack mt="auto" pt={4} spacing={2} flexWrap="wrap">
+                <Button size="xs" variant="outline" onClick={() => setViewingWork(work)}>
+                  查看作品
+                </Button>
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  leftIcon={liked ? <FaHeart /> : <FaRegHeart />}
+                  color={liked ? 'red.500' : undefined}
+                  onClick={() => toggleWorkLike(work.id)}
+                >
+                  {liked ? '已收藏' : '收藏'}
+                </Button>
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  onClick={() => document.getElementById('co-creation-discussion')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  回应
+                </Button>
+                <Button size="xs" variant="ghost" onClick={notifyCoEdit}>
+                  共同编辑
+                </Button>
+              </HStack>
             </Box>
           )
         })}
@@ -702,7 +688,7 @@ function CreationSection({ onOpenSubmit }: { onOpenSubmit: (track: CreationTrack
       {submittedWorks.length > 0 && (
         <Box mt={6} bg="white" border="1px solid" borderColor="blackAlpha.100" borderRadius="lg" p={5}>
           <Text fontWeight={800} fontFamily="heading" mb={3}>
-            本机演示投稿
+            我的投稿
           </Text>
           <VStack align="stretch" spacing={3}>
             {submittedWorks.map((work) => (
@@ -723,7 +709,33 @@ function CreationSection({ onOpenSubmit }: { onOpenSubmit: (track: CreationTrack
       )}
 
       <Divider my={6} />
-      <CommentSection sectionId="co-creation" />
+      <Box id="co-creation-discussion">
+        <CommentSection sectionId="co-creation" />
+      </Box>
+
+      <Modal isOpen={!!viewingWork} onClose={() => setViewingWork(null)} size="lg" isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{viewingWork?.title}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Badge colorScheme="purple" mb={2}>
+              {viewingWork?.track}
+            </Badge>
+            <Text fontSize="sm" color="gray.500" mb={3}>
+              {viewingWork?.author}
+            </Text>
+            <Text color="gray.700" lineHeight="1.8">
+              {viewingWork?.excerpt}
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" onClick={() => setViewingWork(null)}>
+              关闭
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </SectionShell>
   )
 }
@@ -783,8 +795,8 @@ function SubmissionModal({
 
     addSubmission(parsed.data)
     toast({
-      title: '投稿已保存到演示数据',
-      description: '后续接入后端后，这里会进入审核与展示流程。',
+      title: '作品已提交',
+      description: '等待展示。',
       status: 'success',
       duration: 2600,
     })
@@ -866,7 +878,7 @@ function SubmissionModal({
             取消
           </Button>
           <Button leftIcon={<FaPaperPlane />} colorScheme="green" onClick={handleSubmit(submit)}>
-            提交演示
+            提交
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -878,9 +890,6 @@ export default function DiscussionPage() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [selectedTopicId, setSelectedTopicId] = useState<string | undefined>()
   const [selectedTrack, setSelectedTrack] = useState<CreationTrack | undefined>()
-  const submissions = useDiscussionStore((state) => state.submissions)
-  const checkedRituals = useDiscussionStore((state) => state.checkedRituals)
-  const votes = useDiscussionStore((state) => state.votes)
   const discussions = useDiscussionStore((state) => state.discussions)
   const initDiscussions = useDiscussionStore((state) => state.initDiscussions)
 
@@ -890,16 +899,6 @@ export default function DiscussionPage() {
       initDiscussions(seedDiscussions)
     }
   }, [discussions, initDiscussions])
-
-  const stats = useMemo(
-    () => [
-      { label: '会讲场景', value: classicSeminars.length },
-      { label: '思辨议题', value: debateTopics.length },
-      { label: '礼仪任务', value: ritualTasks.length },
-      { label: '本机投稿', value: submissions.length },
-    ],
-    [submissions.length],
-  )
 
   const openTopicSubmit = (topicId: string) => {
     setSelectedTopicId(topicId)
@@ -924,46 +923,59 @@ export default function DiscussionPage() {
           p={{ base: 5, md: 7 }}
           mb={6}
         >
-          <Grid templateColumns={{ base: '1fr', lg: '1.4fr 1fr' }} gap={6} alignItems="center">
+          <Grid templateColumns={{ base: '1fr', lg: '1.1fr 0.9fr' }} gap={6} alignItems="center">
             <GridItem>
               <Badge colorScheme="green" mb={3}>
-                传统书院育人模式的数智化应用
+                书院会讲
               </Badge>
               <Text as="h1" fontSize={{ base: '2xl', md: '4xl' }} fontWeight={900} fontFamily="heading" color="gray.800">
-                会讲互动
+                从一个问题开始
               </Text>
               <Text mt={3} color="gray.600" lineHeight="1.9" maxW="760px">
-                还原传统书院“百家争鸣、教学相长、思辨笃行”的会讲传统，将经典会讲、思辨论辩、礼仪习养和师生共创转化为可点击、可演示的前端样机。
+                会讲不是寻找唯一答案，而是把自己的理由讲清楚，也认真听完不同的看法。你可以从一段历史、一篇文章或一个现实问题出发，参与讨论并留下自己的判断。
               </Text>
               <HStack mt={5} spacing={3} flexWrap="wrap">
-                <Button leftIcon={<FaPlus />} colorScheme="green" onClick={() => openTrackSubmit('经典解读')}>
-                  发起共创
+                <Button colorScheme="green" onClick={() => document.getElementById('classic-seminar')?.scrollIntoView({ behavior: 'smooth' })}>
+                  开始会讲
                 </Button>
-                <Button variant="outline" onClick={() => document.getElementById('classic-seminar')?.scrollIntoView({ behavior: 'smooth' })}>
-                  进入会讲
+                <Button variant="outline" onClick={() => document.getElementById('co-creation')?.scrollIntoView({ behavior: 'smooth' })}>
+                  查看我的参与
                 </Button>
               </HStack>
             </GridItem>
             <GridItem>
-              <SimpleGrid columns={2} spacing={3}>
-                {stats.map((item) => (
-                  <Box key={item.label} bg="brand.bg" borderRadius="md" p={4}>
-                    <Text fontSize="2xl" fontWeight={900} color="brand.primary">
-                      {item.value}
-                    </Text>
-                    <Text fontSize="sm" color="gray.600">
-                      {item.label}
-                    </Text>
-                  </Box>
-                ))}
-              </SimpleGrid>
-              <HStack mt={4} spacing={3} flexWrap="wrap">
-                <Badge colorScheme={Object.keys(votes).length ? 'green' : 'gray'}>投票 {Object.keys(votes).length}</Badge>
-                <Badge colorScheme={Object.values(checkedRituals).filter(Boolean).length ? 'green' : 'gray'}>
-                  打卡 {Object.values(checkedRituals).filter(Boolean).length}
-                </Badge>
-                <Badge colorScheme="purple">localStorage 持久化</Badge>
-              </HStack>
+              <Box bg="brand.bg" borderRadius="lg" border="1px solid" borderColor="blackAlpha.100" p={5} position="relative">
+                <Box position="absolute" top={3} right={3} opacity={0.14} pointerEvents="none">
+                  <svg width="72" height="72" viewBox="0 0 72 72">
+                    <rect x="5" y="5" width="62" height="62" rx="6" fill="none" stroke="#97724F" strokeWidth="2.5" />
+                    <rect x="12" y="12" width="48" height="48" rx="3" fill="none" stroke="#97724F" strokeWidth="1" />
+                    <text x="36" y="46" textAnchor="middle" fontSize="28" fill="#97724F" fontFamily="serif">
+                      讲
+                    </text>
+                  </svg>
+                </Box>
+                <Text fontSize="sm" color="brand.secondary" fontWeight={700}>
+                  本期议题
+                </Text>
+                <Text mt={2} fontSize="lg" fontWeight={800} fontFamily="heading" color="gray.800">
+                  读书是为了形成共同认识，还是保留不同理解？
+                </Text>
+                <Text mt={2} fontSize="sm" color="gray.600" lineHeight="1.7">
+                  阅读背景资料后，选择你的立场并说明理由。
+                </Text>
+                <HStack mt={4} justify="space-between" align="center">
+                  <Text fontSize="sm" color="gray.500">
+                    预计用时 8 分钟
+                  </Text>
+                  <Button
+                    size="sm"
+                    colorScheme="green"
+                    onClick={() => document.getElementById('debate-lab')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    参与讨论
+                  </Button>
+                </HStack>
+              </Box>
             </GridItem>
           </Grid>
         </Box>
