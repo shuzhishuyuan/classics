@@ -9,6 +9,8 @@ import { getRepos } from './db/factory'
 import { setRepos } from './services/auth.service'
 import { runSeed } from './db/seed'
 import { seedTasks } from './services/task.service'
+import { seedSharedResources } from './services/shared-resource.service'
+import { seedDiscussions } from './services/discussion.service'
 import { setupStatic } from './serveStatic'
 
 import authRouter from './routes/auth'
@@ -42,7 +44,12 @@ setRepos(repos)
 
 // 预置种子
 async function initSeed() {
-  await Promise.all([runSeed(repos), seedTasks()])
+  await Promise.all([
+    runSeed(repos),
+    seedTasks(),
+    seedSharedResources(),
+    seedDiscussions(),
+  ])
 }
 
 // ===== Express 初始化 =====
