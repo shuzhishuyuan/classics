@@ -62,7 +62,7 @@ export default function HomePage() {
             {[
               { icon: '📖', label: '经典研习' },
               { icon: '🎬', label: '名师微课' },
-              { icon: '🤖', label: 'AI助学' },
+              { icon: '🤖', label: '书院智问' },
               { icon: '👨‍👩‍👧', label: '亲子共育' },
               { icon: '📦', label: '资源共享' },
             ].map((item) => (

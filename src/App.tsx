@@ -1,17 +1,24 @@
+import { Suspense, lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { Box, chakra, shouldForwardProp } from '@chakra-ui/react'
 import { isValidMotionProp, motion } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import ClassicsPage from './pages/ClassicsPage'
-import ClassicDetailPage from './pages/ClassicDetailPage'
-import ReaderPage from './pages/ReaderPage'
-import AIPage from './pages/AIPage'
-import MyLearningPage from './pages/MyLearningPage'
-import ResourceSharingPage from './pages/ResourceSharingPage'
-import ResourceDetailPage from './pages/ResourceDetailPage'
-import HomePage from './pages/HomePage'
-import DiscussionPage from './pages/DiscussionPage'
+import FloatingAiAssistant from './components/FloatingAiAssistant'
+import { Spinner, VStack, Text } from '@chakra-ui/react'
+
+const ClassicsPage = lazy(() => import('./pages/ClassicsPage'))
+const ClassicDetailPage = lazy(() => import('./pages/ClassicDetailPage'))
+const ReaderPage = lazy(() => import('./pages/ReaderPage'))
+const AIPage = lazy(() => import('./pages/AIPage'))
+const MyLearningPage = lazy(() => import('./pages/MyLearningPage'))
+const ResourceSharingPage = lazy(() => import('./pages/ResourceSharingPage'))
+const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage'))
+const HomePage = lazy(() => import('./pages/HomePage'))
+const DiscussionPage = lazy(() => import('./pages/DiscussionPage'))
+const Immersive3DPage = lazy(() => import('./pages/Immersive3D/Immersive3DPage'))
+const YueluAcademyPage = lazy(() => import('./pages/Immersive3D/YueluAcademyPage'))
+const AcademyExhibitionPage = lazy(() => import('./pages/Immersive3D/AcademyExhibitionPage'))
 
 const MotionBox = chakra(motion.div, {
   shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
@@ -19,6 +26,15 @@ const MotionBox = chakra(motion.div, {
 
 const pageMotion = {
   transition: { duration: 0.28, ease: 'easeOut' },
+}
+
+function PageFallback() {
+  return (
+    <VStack py={24} spacing={4}>
+      <Spinner color="brand.primary" size="lg" thickness="3px" />
+      <Text fontSize="sm" color="gray.500">加载中</Text>
+    </VStack>
+  )
 }
 
 /** 典籍页面专用：带侧边栏的布局 */
@@ -54,53 +70,60 @@ export default function App() {
     <Box minH="100vh">
       <Navbar />
 
-      <Routes>
-        <Route path="/" element={
-  <PageLayout>
-    <HomePage />
-  </PageLayout>
-} />
-        <Route path="/classics" element={
-          <SidebarLayout>
-            <ClassicsPage />
-          </SidebarLayout>
-        } />
-        <Route path="/classics/:id" element={
-          <SidebarLayout>
-            <ClassicDetailPage />
-          </SidebarLayout>
-        } />
-        <Route path="/classics/:id/read/:volumeId/:chapterId" element={
-          <SidebarLayout>
-            <ReaderPage />
-          </SidebarLayout>
-        } />
-        <Route path="/discussion" element={
-          <SidebarLayout>
-            <DiscussionPage />
-          </SidebarLayout>
-        } />
-        <Route path="/ai" element={
-          <SidebarLayout>
-            <AIPage />
-          </SidebarLayout>
-        } />
-        <Route path="/learning" element={
-          <SidebarLayout>
-            <MyLearningPage />
-          </SidebarLayout>
-        } />
-        <Route path="/resources" element={
-          <PageLayout>
-            <ResourceSharingPage />
-          </PageLayout>
-        } />
-        <Route path="/resources/:id" element={
-          <PageLayout>
-            <ResourceDetailPage />
-          </PageLayout>
-        } />
-      </Routes>
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route path="/" element={
+    <PageLayout>
+      <HomePage />
+    </PageLayout>
+  } />
+          <Route path="/classics" element={
+            <SidebarLayout>
+              <ClassicsPage />
+            </SidebarLayout>
+          } />
+          <Route path="/classics/:id" element={
+            <SidebarLayout>
+              <ClassicDetailPage />
+            </SidebarLayout>
+          } />
+          <Route path="/classics/:id/read/:volumeId/:chapterId" element={
+            <SidebarLayout>
+              <ReaderPage />
+            </SidebarLayout>
+          } />
+          <Route path="/discussion" element={
+            <SidebarLayout>
+              <DiscussionPage />
+            </SidebarLayout>
+          } />
+          <Route path="/immersive3d" element={<Immersive3DPage />} />
+          <Route path="/academy-3d" element={<YueluAcademyPage />} />
+          <Route path="/academy-3d/:academyId" element={<AcademyExhibitionPage />} />
+          <Route path="/academy/yuelu" element={<YueluAcademyPage />} />
+          <Route path="/ai" element={
+            <SidebarLayout>
+              <AIPage />
+            </SidebarLayout>
+          } />
+          <Route path="/learning" element={
+            <SidebarLayout>
+              <MyLearningPage />
+            </SidebarLayout>
+          } />
+          <Route path="/resources" element={
+            <PageLayout>
+              <ResourceSharingPage />
+            </PageLayout>
+          } />
+          <Route path="/resources/:id" element={
+            <PageLayout>
+              <ResourceDetailPage />
+            </PageLayout>
+          } />
+        </Routes>
+      </Suspense>
+      <FloatingAiAssistant />
     </Box>
   )
 }

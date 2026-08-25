@@ -1,6 +1,10 @@
 const BASE = '/api/v1'
 
-// ===== Token 管理 =====
+type ApiResponse<T> = {
+  code: number
+  message: string
+  data: T
+}
 
 function getAccessToken(): string | null {
   return localStorage.getItem('access_token')
@@ -20,7 +24,23 @@ export function clearTokens() {
   localStorage.removeItem('refresh_token')
 }
 
-// ===== 请求封装 =====
+async function readApiResponse<T>(res: Response): Promise<ApiResponse<T>> {
+  const text = await res.text()
+
+  if (!text.trim()) {
+    throw new Error(
+      res.status === 502 || res.status === 503
+        ? '后端服务未启动，请运行 npm run server'
+        : `服务器返回空响应（HTTP ${res.status}）`,
+    )
+  }
+
+  try {
+    return JSON.parse(text) as ApiResponse<T>
+  } catch {
+    throw new Error(`服务器返回了无效响应（HTTP ${res.status}）`)
+  }
+}
 
 let isRefreshing = false
 let refreshQueue: Array<(token: string) => void> = []
@@ -35,12 +55,14 @@ async function tryRefresh(): Promise<string | null> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken: rt }),
     })
-    const json = await res.json()
+    const json = await readApiResponse<{ accessToken: string; refreshToken: string }>(res)
     if (json.code === 200 && json.data) {
       setTokens(json.data.accessToken, json.data.refreshToken)
       return json.data.accessToken
     }
-  } catch { /* 网络错误 */ }
+  } catch {
+    // Refresh failures are handled by clearing the local tokens below.
+  }
 
   clearTokens()
   return null
@@ -49,19 +71,22 @@ async function tryRefresh(): Promise<string | null> {
 export async function request<T = unknown>(
   path: string,
   options: RequestInit = {},
-): Promise<{ code: number; message: string; data: T }> {
+): Promise<ApiResponse<T>> {
   const token = getAccessToken()
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   }
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  let res: Response
+  try {
+    res = await fetch(`${BASE}${path}`, { ...options, headers })
+  } catch {
+    throw new Error('无法连接后端服务，请确认已运行 npm run server')
   }
 
-  let res = await fetch(`${BASE}${path}`, { ...options, headers })
-
-  // 401 → 用 refreshToken 刷新 → 重试一次
   if (res.status === 401 && getRefreshToken()) {
     if (!isRefreshing) {
       isRefreshing = true
@@ -69,29 +94,27 @@ export async function request<T = unknown>(
       isRefreshing = false
 
       if (newToken) {
-        refreshQueue.forEach(cb => cb(newToken))
+        refreshQueue.forEach((callback) => callback(newToken))
         refreshQueue = []
-
-        headers['Authorization'] = `Bearer ${newToken}`
+        headers.Authorization = `Bearer ${newToken}`
         res = await fetch(`${BASE}${path}`, { ...options, headers })
       } else {
         refreshQueue = []
       }
     } else {
-      // 已有刷新在进行中，排队等待
-      const newToken = await new Promise<string | null>(resolve => {
-        refreshQueue.push(token => resolve(token))
-        // 超时保护
+      const newToken = await new Promise<string | null>((resolve) => {
+        refreshQueue.push((newAccessToken) => resolve(newAccessToken))
         setTimeout(() => resolve(null), 5000)
       })
+
       if (newToken) {
-        headers['Authorization'] = `Bearer ${newToken}`
+        headers.Authorization = `Bearer ${newToken}`
         res = await fetch(`${BASE}${path}`, { ...options, headers })
       }
     }
   }
 
-  return res.json()
+  return readApiResponse<T>(res)
 }
 
 export function get<T = unknown>(path: string) {

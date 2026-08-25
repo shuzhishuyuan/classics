@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.13.0",
     "@react-three/drei": "^9.106.0",
     "@react-three/fiber": "^8.16.8",
+    "@react-three/rapier": "^1.5.0",
     "@tiptap/react": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",
     "axios": "^1.6.8",

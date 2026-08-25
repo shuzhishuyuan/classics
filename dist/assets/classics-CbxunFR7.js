@@ -1,0 +1,1 @@
+import{a4 as a}from"./index-Bf2XnP86.js";function e(s={}){const c=new URLSearchParams(s).toString();return a(`/classics${c?"?"+c:""}`)}function r(s){return a(`/classics/${s}`)}function n(s,c){return a(`/classics/${s}/chapters/${c}`)}function i(s){return a(`/classics/search?keyword=${encodeURIComponent(s)}`)}export{r as a,e as b,n as f,i as s};

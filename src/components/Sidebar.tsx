@@ -16,7 +16,7 @@ interface NavTab {
 const moduleMenus: Record<ModuleKey, NavTab[]> = {
   classics: [
     { key: 'classics', label: '典籍检索', icon: FaBookOpen, path: '/classics' },
-    { key: 'ai', label: 'AI智能助学', icon: FaRobot, path: '/ai' },
+    { key: 'ai', label: '书院智问', icon: FaRobot, path: '/ai' },
     { key: 'learning', label: '我的典籍学习', icon: FaUserGraduate, path: '/learning' },
   ],
   discussion: discussionMenu.map((item) => ({
@@ -26,7 +26,7 @@ const moduleMenus: Record<ModuleKey, NavTab[]> = {
     path: `/discussion#${item.id}`,
   })),
   ai: [
-    { key: 'ai', label: 'AI智能助学', icon: FaRobot, path: '/ai' },
+    { key: 'ai', label: '书院智问', icon: FaRobot, path: '/ai' },
     { key: 'classics', label: '返回经典研习', icon: FaBookOpen, path: '/classics' },
   ],
   learning: [
