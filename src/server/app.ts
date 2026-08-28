@@ -24,6 +24,8 @@ import discussionsRouter from './routes/discussions'
 import tasksRouter from './routes/tasks'
 import teacherRouter from './routes/teacher'
 import uploadRouter from './routes/upload'
+import immersiveRouter from './routes/immersive'
+import aiRouter from './routes/ai'
 
 // ===== 数据库初始化（先完成建表再启动 HTTP）=====
 const dbType = process.env.DB_TYPE || 'sqlite'
@@ -90,6 +92,8 @@ app.use('/api/v1/discussions', discussionsRouter)
 app.use('/api/v1/tasks', tasksRouter)
 app.use('/api/v1/teacher', teacherRouter)
 app.use('/api/v1', uploadRouter)
+app.use('/api/v1/immersive', immersiveRouter)
+app.use('/api/v1/ai', aiRouter)
 
 // ===== 生产：前端静态文件 =====
 setupStatic(app)

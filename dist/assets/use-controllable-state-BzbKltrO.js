@@ -1,0 +1,1 @@
+import{aC as n,aw as v}from"./index-NN2gr4Qk.js";function P(c){const{value:s,defaultValue:d,onChange:p,shouldUpdate:f=(t,u)=>t!==u}=c,l=n(p),r=n(f),[i,C]=v.useState(d),o=s!==void 0,e=o?s:i,h=n(t=>{const a=typeof t=="function"?t(e):t;r(e,a)&&(o||C(a),l(a))},[o,l,e,r]);return[e,h]}export{P as u};
