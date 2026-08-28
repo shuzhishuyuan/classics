@@ -1,1 +1,0 @@
-import{a4 as s,am as t}from"./index-Bf2XnP86.js";function c(e={}){const r=new URLSearchParams(e).toString();return s(`/resources${r?"?"+r:""}`)}function o(e){return s(`/resources/${e}`)}function n(e){return t("/resources/shared",e)}function u(e={}){const r=new URLSearchParams(e).toString();return s(`/resources/shared/list${r?"?"+r:""}`)}export{c as a,u as b,n as c,o as f};

@@ -1,1 +1,0 @@
-import{a4 as r,an as a,am as e}from"./index-Bf2XnP86.js";async function o(n){return e(`/learning/favorites/${n}`)}function i(){return r("/learning/favorites")}function f(){return r("/learning/enrolled")}async function u(n,t){return a("/learning/progress",{classicId:n,chapterId:t})}function c(){return r("/learning/stats")}export{i as a,c as b,f,u as s,o as t};

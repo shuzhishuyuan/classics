@@ -16,7 +16,7 @@ const navLinks = [
   { label: '首页', path: '/' },
   { label: '经典研习', path: '/classics' },
   { label: '会讲互动', path: '/discussion' },
-  { label: '3D展馆', path: '/academy-3d' },
+  { label: '互动展馆', path: '/academy-hall' },
   { label: '资源共享', path: '/resources' },
 ]
 

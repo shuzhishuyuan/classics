@@ -1,1 +1,0 @@
-import{au as n,ao as C}from"./index-Bf2XnP86.js";function P(c){const{value:s,defaultValue:d,onChange:p,shouldUpdate:f=(t,r)=>t!==r}=c,l=n(p),u=n(f),[i,h]=C.useState(d),o=s!==void 0,e=o?s:i,v=n(t=>{const a=typeof t=="function"?t(e):t;u(e,a)&&(o||h(a),l(a))},[o,l,e,u]);return[e,v]}export{P as u};

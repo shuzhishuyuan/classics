@@ -16,7 +16,6 @@ interface UserDashboardProps {
 const quickActions: Record<string, { label: string; icon: string; path: string; color: string }[]> = {
   '学生': [
     { label: '经典研习', icon: '📖', path: '/classics', color: '#2C5F2D' },
-    { label: '书院智问', icon: '🤖', path: '/ai', color: '#97724F' },
     { label: '学习资源', icon: '📦', path: '/resources', color: '#6B5B4F' },
     { label: '我的学习', icon: '📚', path: '/learning', color: '#C8A96E' },
   ],
@@ -24,7 +23,6 @@ const quickActions: Record<string, { label: string; icon: string; path: string; 
     { label: '备课资源', icon: '📝', path: '/resources', color: '#2C5F2D' },
     { label: '经典研习', icon: '📖', path: '/classics', color: '#97724F' },
     { label: '名师微课', icon: '🎬', path: '/resources', color: '#6B5B4F' },
-    { label: '书院智问', icon: '🤖', path: '/ai', color: '#C8A96E' },
   ],
   '家长': [
     { label: '亲子共读', icon: '👨‍👩‍👧', path: '/resources', color: '#2C5F2D' },

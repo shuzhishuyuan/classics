@@ -4,21 +4,17 @@ import { Box, chakra, shouldForwardProp } from '@chakra-ui/react'
 import { isValidMotionProp, motion } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import FloatingAiAssistant from './components/FloatingAiAssistant'
 import { Spinner, VStack, Text } from '@chakra-ui/react'
 
 const ClassicsPage = lazy(() => import('./pages/ClassicsPage'))
 const ClassicDetailPage = lazy(() => import('./pages/ClassicDetailPage'))
 const ReaderPage = lazy(() => import('./pages/ReaderPage'))
-const AIPage = lazy(() => import('./pages/AIPage'))
 const MyLearningPage = lazy(() => import('./pages/MyLearningPage'))
 const ResourceSharingPage = lazy(() => import('./pages/ResourceSharingPage'))
 const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const DiscussionPage = lazy(() => import('./pages/DiscussionPage'))
-const Immersive3DPage = lazy(() => import('./pages/Immersive3D/Immersive3DPage'))
-const YueluAcademyPage = lazy(() => import('./pages/Immersive3D/YueluAcademyPage'))
-const AcademyExhibitionPage = lazy(() => import('./pages/Immersive3D/AcademyExhibitionPage'))
+const InteractiveAcademyHallPage = lazy(() => import('./pages/Interactive2D/AcademyHallPage'))
 
 const MotionBox = chakra(motion.div, {
   shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
@@ -65,6 +61,24 @@ function PageLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
+function InteractiveHallLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Box className="interactive-hall-shell" display="flex" pt="72px">
+      <Sidebar />
+      <MotionBox
+        flex="1"
+        minW={0}
+        ml={{ base: 0, lg: '220px' }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        {...(pageMotion as any)}
+      >
+        {children}
+      </MotionBox>
+    </Box>
+  )
+}
+
 export default function App() {
   return (
     <Box minH="100vh">
@@ -72,11 +86,7 @@ export default function App() {
 
       <Suspense fallback={<PageFallback />}>
         <Routes>
-          <Route path="/" element={
-    <PageLayout>
-      <HomePage />
-    </PageLayout>
-  } />
+          <Route path="/" element={<HomePage />} />
           <Route path="/classics" element={
             <SidebarLayout>
               <ClassicsPage />
@@ -97,15 +107,12 @@ export default function App() {
               <DiscussionPage />
             </SidebarLayout>
           } />
-          <Route path="/immersive3d" element={<Immersive3DPage />} />
-          <Route path="/academy-3d" element={<YueluAcademyPage />} />
-          <Route path="/academy-3d/:academyId" element={<AcademyExhibitionPage />} />
-          <Route path="/academy/yuelu" element={<YueluAcademyPage />} />
-          <Route path="/ai" element={
-            <SidebarLayout>
-              <AIPage />
-            </SidebarLayout>
-          } />
+          <Route path="/immersive3d" element={<InteractiveHallLayout><InteractiveAcademyHallPage /></InteractiveHallLayout>} />
+          <Route path="/academy-hall" element={<InteractiveHallLayout><InteractiveAcademyHallPage /></InteractiveHallLayout>} />
+          <Route path="/academy-hall/:academyId" element={<InteractiveHallLayout><InteractiveAcademyHallPage /></InteractiveHallLayout>} />
+          <Route path="/academy-3d" element={<InteractiveHallLayout><InteractiveAcademyHallPage /></InteractiveHallLayout>} />
+          <Route path="/academy-3d/:academyId" element={<InteractiveHallLayout><InteractiveAcademyHallPage /></InteractiveHallLayout>} />
+          <Route path="/academy/yuelu" element={<InteractiveHallLayout><InteractiveAcademyHallPage /></InteractiveHallLayout>} />
           <Route path="/learning" element={
             <SidebarLayout>
               <MyLearningPage />
@@ -123,7 +130,6 @@ export default function App() {
           } />
         </Routes>
       </Suspense>
-      <FloatingAiAssistant />
     </Box>
   )
 }
