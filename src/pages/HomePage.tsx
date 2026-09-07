@@ -83,7 +83,7 @@ export default function HomePage() {
 
       {/* ========== 已登录：用户仪表盘 ========== */}
       {isLoggedIn && user && (
-        <Box py={{ base: 4, md: 8 }}>
+        <Box pt={{ base: '96px', md: '112px' }} pb={{ base: 8, md: 12 }} px={{ base: 4, md: 0 }}>
           <UserDashboard user={user} onLogout={logout} />
         </Box>
       )}
