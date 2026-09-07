@@ -84,24 +84,16 @@ export default function Navbar() {
           _hover={{ textDecoration: 'none' }}
           flexShrink={0}
         >
-          <Box
-            w="36px"
-            h="36px"
-            bg="brand.primary"
-            borderRadius="md"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="xl"
-            color="white"
-            fontWeight={900}
-            fontFamily="serif"
-          >
-            书
-          </Box>
-          <Text fontSize="xl" fontWeight={700} fontFamily="heading" color="brand.primary">
-            数智书院
-          </Text>
+                    <Box
+            as="img"
+            src="/logo.png"
+            alt="拾遗学舍"
+            w="210px"
+            h="52px"
+            objectFit="contain"
+            objectPosition="left center"
+          />
+          
         </Link>
 
         <HStack spacing={1} display={{ base: 'none', md: 'flex' }} flexShrink={0}>

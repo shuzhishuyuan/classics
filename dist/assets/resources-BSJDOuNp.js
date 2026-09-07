@@ -1,1 +1,0 @@
-import{g as s,p as t}from"./useApi-zeRYGOkS.js";function o(e={}){const r=new URLSearchParams(e).toString();return s(`/resources${r?"?"+r:""}`)}function a(e){return s(`/resources/${e}`)}function n(e){return t("/resources/shared",e)}function u(e={}){const r=new URLSearchParams(e).toString();return s(`/resources/shared/list${r?"?"+r:""}`)}export{o as a,u as b,n as c,a as f};

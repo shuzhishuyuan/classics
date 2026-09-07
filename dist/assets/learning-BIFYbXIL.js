@@ -1,1 +1,0 @@
-import{g as r,a as e,p as a}from"./useApi-zeRYGOkS.js";async function o(n){return a(`/learning/favorites/${n}`)}function i(){return r("/learning/favorites")}function f(){return r("/learning/enrolled")}async function g(n,t){return e("/learning/progress",{classicId:n,chapterId:t})}function u(){return r("/learning/stats")}export{i as a,u as b,f,g as s,o as t};

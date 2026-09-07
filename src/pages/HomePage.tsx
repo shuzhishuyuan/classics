@@ -12,22 +12,28 @@ export default function HomePage() {
   const [view, setView] = useState<AuthView>('login')
 
   return (
-    <Box maxW="1200px" mx="auto">
+    <Box maxW="1200px" w="100%" minH="100vh" mx="auto" bg="white">
       {/* ========== 未登录：登录/注册区 ========== */}
       {!isLoggedIn && (
-        <Box py={{ base: 8, md: 12 }}>
+        <Box pt={{ base: "112px", md: "138px" }} pb={{ base: 8, md: 12 }}>
           {/* 平台标题 */}
           <VStack spacing={3} mb={10} textAlign="center">
-            <Text
+            <Box
               fontSize={{ base: '4xl', md: '5xl' }}
               fontWeight={900}
               fontFamily="heading"
               color="brand.primary"
               letterSpacing="wide"
             >
-              <Text as="span" mr={3}>🏛️</Text>
-              数智书院
-            </Text>
+              <Box
+                as="img"
+                src="/logo.png"
+                alt="拾遗学舍"
+                w={{ base: 'min(88vw, 420px)', md: '560px' }}
+                h="auto"
+                objectFit="contain"
+              />
+            </Box>
             <Text
               fontSize={{ base: 'sm', md: 'md' }}
               color="gray.500"
