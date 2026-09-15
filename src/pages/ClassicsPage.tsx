@@ -9,7 +9,7 @@ import { SearchIcon, CloseIcon, ViewGridIcon, ViewListIcon } from '../components
 import ClassicCard from '../components/ClassicCard'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { fetchClassics, searchClassics } from '../api/classics'
-import { toggleFavorite, fetchFavorites } from '../api/learning'
+import { toggleFavorite, fetchFavorites, toggleEnroll, fetchEnrolled } from '../api/learning'
 import type { Classic, EducateDimension, AcademySource, GenreType } from '../types'
 
 type QuickTag = '全部' | '已收藏'
@@ -51,6 +51,7 @@ export default function ClassicsPage() {
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [searchHistory, setSearchHistory] = useLocalStorage<{ keyword: string; timestamp: number }[]>('search_history', [])
   const [favorites, setFavorites] = useState<string[]>([])
+  const [enrolled, setEnrolled] = useState<string[]>([])
   const [classics, setClassics] = useState<Classic[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -66,9 +67,10 @@ export default function ClassicsPage() {
     if (acas) params.academy = acas
     if (gens) params.genre = gens
 
-    const [cRes, fRes] = await Promise.all([
+    const [cRes, fRes, eRes] = await Promise.all([
       fetchClassics(params),
       fetchFavorites(),
+      fetchEnrolled(),
     ])
 
     if (cRes.code === 200) {
@@ -77,6 +79,9 @@ export default function ClassicsPage() {
     }
     if (fRes.code === 200) {
       setFavorites(fRes.data.map((c: any) => c.id))
+    }
+    if (eRes.code === 200) {
+      setEnrolled(eRes.data.map((c: any) => c.id))
     }
     setLoading(false)
   }, [])
@@ -115,6 +120,14 @@ export default function ClassicsPage() {
     if (res.code === 200) {
       if (res.data.favorited) setFavorites(prev => [...prev, classicId])
       else setFavorites(prev => prev.filter(id => id !== classicId))
+    }
+  }
+
+  const handleToggleLearning = async (classicId: string) => {
+    const res = await toggleEnroll(classicId)
+    if (res.code === 200) {
+      if (res.data.enrolled) setEnrolled(prev => [...prev, classicId])
+      else setEnrolled(prev => prev.filter(id => id !== classicId))
     }
   }
 
@@ -275,15 +288,17 @@ export default function ClassicsPage() {
         viewMode === 'grid' ? (
           <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={5}>
             {displayClassics.map(c => (
-              <ClassicCard key={c.id} classic={{ ...c, isFavorited: favorites.includes(c.id) }} viewMode="grid"
-                onToggleFavorite={() => handleToggleFavorite(c.id)} />
+              <ClassicCard key={c.id} classic={{ ...c, isFavorited: favorites.includes(c.id), isLearning: enrolled.includes(c.id) }} viewMode="grid"
+                onToggleFavorite={() => handleToggleFavorite(c.id)}
+                onToggleLearning={() => handleToggleLearning(c.id)} />
             ))}
           </SimpleGrid>
         ) : (
           <VStack spacing={3} align="stretch">
             {displayClassics.map(c => (
-              <ClassicCard key={c.id} classic={{ ...c, isFavorited: favorites.includes(c.id) }} viewMode="list"
-                onToggleFavorite={() => handleToggleFavorite(c.id)} />
+              <ClassicCard key={c.id} classic={{ ...c, isFavorited: favorites.includes(c.id), isLearning: enrolled.includes(c.id) }} viewMode="list"
+                onToggleFavorite={() => handleToggleFavorite(c.id)}
+                onToggleLearning={() => handleToggleLearning(c.id)} />
             ))}
           </VStack>
         )

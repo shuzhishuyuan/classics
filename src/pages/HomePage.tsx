@@ -37,11 +37,10 @@ export default function HomePage() {
             <Text
               fontSize={{ base: 'sm', md: 'md' }}
               color="gray.500"
-              maxW="600px"
               lineHeight="1.7"
+              whiteSpace="nowrap"
             >
-              承书院文脉，育时代新人 · 搭建书院—班级—家庭协同育人的
-              传统文化教育数智化平台
+              承书院文脉，育时代新人 · 搭建书院—班级—家庭协同育人的传统文化教育数智化平台
             </Text>
           </VStack>
 
@@ -58,11 +57,22 @@ export default function HomePage() {
             />
           )}
 
+          {/* 版权信息 */}
+          <Text
+            mt={6}
+            textAlign="center"
+            fontSize="sm"
+            color="#1F4442"
+            lineHeight="1.6"
+          >
+            本软件版权归属华中师范大学教育学院与人工智能教育学部“拾遗学舍”项目组所有，相关问题联系：wyw097@163.com
+          </Text>
+
           {/* 底部特性说明 */}
           <HStack
             justify="center"
             spacing={{ base: 4, md: 10 }}
-            mt={12}
+            mt={8}
             flexWrap="wrap"
           >
             {[
