@@ -86,7 +86,11 @@ export default function App() {
 
       <Suspense fallback={<PageFallback />}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={
+            <Box pt="80px">
+              <HomePage />
+            </Box>
+          } />
           <Route path="/classics" element={
             <SidebarLayout>
               <ClassicsPage />
