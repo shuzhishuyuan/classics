@@ -21,6 +21,10 @@ export interface AiProviderPreset {
   keyLabel: string
 }
 
+export interface AiProviderInfo extends AiProviderPreset {
+  hasDefaultKey?: boolean
+}
+
 export interface AiClientConfig {
   provider: AiProviderId
   apiKey: string

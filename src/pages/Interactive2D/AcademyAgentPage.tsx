@@ -39,6 +39,7 @@ import {
   getAiProviderPreset,
   type AiClientConfig,
   type AiMessage,
+  type AiProviderInfo,
   type AiProviderId,
 } from '../../types/ai'
 import { fetchAiProviders, sendAiChat } from '../../api/ai'
@@ -136,7 +137,7 @@ function formatDate(timestamp: number) {
 
 export default function AcademyAgentPage({ context = lobbyAgentContext, embedded = false, onBack }: AcademyAgentPageProps) {
   const toast = useToast()
-  const [providers, setProviders] = useState(AI_PROVIDERS)
+  const [providers, setProviders] = useState<AiProviderInfo[]>(AI_PROVIDERS)
   const [config, setConfig] = useState<AiClientConfig>(() => loadConfig())
   const [sessions, setSessions] = useState<ChatSession[]>(() => loadInitialSessions())
   const [currentSessionId, setCurrentSessionId] = useState('')
@@ -219,7 +220,7 @@ export default function AcademyAgentPage({ context = lobbyAgentContext, embedded
   }
 
   const restoreDefaultConfig = () => {
-    setConfig(createDefaultAiConfig(config.provider))
+    setConfig(createDefaultAiConfig('deepseek'))
   }
 
   const createNewChat = () => {
@@ -248,7 +249,7 @@ export default function AcademyAgentPage({ context = lobbyAgentContext, embedded
     const content = input.trim()
     if (!content || sending || !currentSession) return
 
-    if (!config.apiKey.trim()) {
+    if (!config.apiKey.trim() && config.provider !== 'deepseek') {
       toast({
         title: '请先填写 API Key',
         status: 'warning',
@@ -598,8 +599,17 @@ export default function AcademyAgentPage({ context = lobbyAgentContext, embedded
                   onChange={(event) =>
                     setConfig((previous) => ({ ...previous, apiKey: event.target.value }))
                   }
-                  placeholder={currentProvider?.keyLabel || 'API Key'}
+                  placeholder={
+                    config.provider === 'deepseek'
+                      ? '留空使用服务端默认密钥，也可填写自己的密钥'
+                      : currentProvider?.keyLabel || 'API Key'
+                  }
                 />
+                {config.provider === 'deepseek' && currentProvider?.hasDefaultKey && (
+                  <Text fontSize="xs" color="green.600" mt={1}>
+                    当前未填写用户密钥时，将使用服务端默认密钥
+                  </Text>
+                )}
               </Box>
 
               <Box>

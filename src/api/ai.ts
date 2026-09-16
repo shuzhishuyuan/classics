@@ -1,8 +1,8 @@
 import { get, post } from '../hooks/useApi'
-import type { AiChatRequest, AiChatResponse, AiProviderId } from '../types/ai'
+import type { AiChatRequest, AiChatResponse, AiProviderInfo } from '../types/ai'
 
 export function fetchAiProviders() {
-  return get<Array<{ id: AiProviderId; label: string; baseUrl: string; model: string; keyLabel: string }>>('/ai/providers')
+  return get<AiProviderInfo[]>('/ai/providers')
 }
 
 export function sendAiChat(payload: AiChatRequest) {

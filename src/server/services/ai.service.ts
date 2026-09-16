@@ -1,5 +1,48 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import type { AiChatRequest, AiChatResponse, AiProviderId } from '../../types/ai'
 import { buildChatCompletionsUrl, getAiProviderPreset, normalizeBaseUrl } from '../../types/ai'
+
+const DEFAULT_DEEPSEEK_KEY_FILES = [
+  process.env.DEEPSEEK_API_KEY_FILE,
+  process.env.DEEPSEEK_API_KEY_OVERRIDE_FILE,
+  path.resolve(process.cwd(), 'server', 'config', 'deepseek-api-key.txt'),
+  path.resolve(process.cwd(), 'deepseek-api-key.txt'),
+].filter((filePath): filePath is string => Boolean(filePath?.trim()))
+
+function readKeyFromFile(filePath: string) {
+  try {
+    if (!fs.statSync(filePath).isFile()) return ''
+    return fs.readFileSync(filePath, 'utf8').trim()
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * 默认密钥只在服务端解析，避免把平台密钥暴露给浏览器。
+ * 替换文件优先于环境变量，便于部署时无须修改代码。
+ */
+export function getDefaultDeepSeekApiKey() {
+  for (const filePath of DEFAULT_DEEPSEEK_KEY_FILES) {
+    const key = readKeyFromFile(filePath)
+    if (key) return key
+  }
+
+  return process.env.DEEPSEEK_API_KEY?.trim() || ''
+}
+
+function resolveApiKey(input: AiChatRequest) {
+  const userApiKey = input.apiKey?.trim()
+  if (userApiKey) return userApiKey
+
+  if (input.provider === 'deepseek') {
+    const defaultApiKey = getDefaultDeepSeekApiKey()
+    if (defaultApiKey) return defaultApiKey
+  }
+
+  throw new Error('请填写 API Key，或在服务端配置默认密钥')
+}
 
 function normalizeMessages(messages: AiChatRequest['messages']) {
   return messages
@@ -24,9 +67,9 @@ async function readProviderResponse(res: Response) {
 export async function chatWithProvider(input: AiChatRequest): Promise<AiChatResponse> {
   const preset = getAiProviderPreset(input.provider)
   const baseUrl = normalizeBaseUrl(input.baseUrl || preset.baseUrl)
+  const apiKey = resolveApiKey(input)
 
   if (!baseUrl) throw new Error('请填写 API 地址')
-  if (!input.apiKey.trim()) throw new Error('请填写 API Key')
 
   const payload = {
     model: input.model || preset.model,
@@ -40,7 +83,7 @@ export async function chatWithProvider(input: AiChatRequest): Promise<AiChatResp
     res = await fetch(buildChatCompletionsUrl(baseUrl), {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${input.apiKey.trim()}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -86,6 +129,7 @@ export function listAiProviders() {
       baseUrl: preset.baseUrl,
       model: preset.model,
       keyLabel: preset.keyLabel,
+      hasDefaultKey: id === 'deepseek' && Boolean(getDefaultDeepSeekApiKey()),
     }
   })
 }

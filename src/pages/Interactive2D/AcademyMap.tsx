@@ -72,8 +72,40 @@ const mapPoints: MapPoint[] = [
 const initialSelectedId: AcademyId = 'yuelu'
 const initialCenter: [number, number] = [31.8, 113.4]
 
+const GCJ_A = 6378245
+const GCJ_EE = 0.006693421622965943
+
+function transformLat(x: number, y: number) {
+  let ret = -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x))
+  ret += ((20 * Math.sin(6 * x * Math.PI) + 20 * Math.sin(2 * x * Math.PI)) * 2) / 3
+  ret += ((20 * Math.sin(y * Math.PI) + 40 * Math.sin((y / 3) * Math.PI)) * 2) / 3
+  ret += ((160 * Math.sin((y / 12) * Math.PI) + 320 * Math.sin((y * Math.PI) / 30)) * 2) / 3
+  return ret
+}
+
+function transformLng(x: number, y: number) {
+  let ret = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x))
+  ret += ((20 * Math.sin(6 * x * Math.PI) + 20 * Math.sin(2 * x * Math.PI)) * 2) / 3
+  ret += ((20 * Math.sin(x * Math.PI) + 40 * Math.sin((x / 3) * Math.PI)) * 2) / 3
+  ret += ((150 * Math.sin((x / 12) * Math.PI) + 300 * Math.sin((x / 30) * Math.PI)) * 2) / 3
+  return ret
+}
+
+function wgs84ToGcj02(lng: number, lat: number): [number, number] {
+  let dLat = transformLat(lng - 105, lat - 35)
+  let dLng = transformLng(lng - 105, lat - 35)
+  const radLat = (lat / 180) * Math.PI
+  let magic = Math.sin(radLat)
+  magic = 1 - GCJ_EE * magic * magic
+  const sqrtMagic = Math.sqrt(magic)
+  dLat = (dLat * 180) / (((GCJ_A * (1 - GCJ_EE)) / (magic * sqrtMagic)) * Math.PI)
+  dLng = (dLng * 180) / ((GCJ_A / sqrtMagic) * Math.cos(radLat) * Math.PI)
+  return [lng + dLng, lat + dLat]
+}
+
 function toLatLng(position: [number, number]): [number, number] {
-  return [position[1], position[0]]
+  const [lng, lat] = wgs84ToGcj02(position[0], position[1])
+  return [lat, lng]
 }
 
 function createMarkerIcon(point: MapPoint, index: number, active: boolean) {
@@ -82,10 +114,11 @@ function createMarkerIcon(point: MapPoint, index: number, active: boolean) {
     html: `
       <span class="academy-map-pin${active ? ' is-active' : ''}" style="--pin-color:${point.color}">
         <b>${index + 1}</b>
+        <em>${point.name.replace('书院', '')}</em>
       </span>
     `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
+    iconSize: [70, 48],
+    iconAnchor: [35, 44],
   })
 }
 
@@ -119,7 +152,7 @@ export default function AcademyMap({ onEnter }: { onEnter: (id: AcademyId) => vo
 
     const map = L.map(containerRef.current, {
       zoomControl: false,
-      attributionControl: true,
+      attributionControl: false,
       minZoom: 4,
       maxZoom: 13,
       scrollWheelZoom: true,
@@ -132,8 +165,10 @@ export default function AcademyMap({ onEnter }: { onEnter: (id: AcademyId) => vo
     mapRef.current = map
 
     L.control.zoom({ position: 'bottomright' }).addTo(map)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
+    L.control.attribution({ prefix: false, position: 'bottomright' }).addTo(map)
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}', {
+      attribution: '高德地图',
+      subdomains: ['1', '2', '3', '4'],
       maxZoom: 19,
       detectRetina: true,
     }).addTo(map)
