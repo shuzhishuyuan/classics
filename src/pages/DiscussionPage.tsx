@@ -447,15 +447,48 @@ function SeminarSection() {
   )
 }
 
+/** 根据用户年级字符串推断学段 */
+function inferSchoolLevel(grade?: string): string | null {
+  if (!grade) return null
+  if (grade.includes('小学')) return '小学高段'
+  if (grade.includes('初中')) return '初中'
+  if (grade.includes('高中')) return '高中'
+  return null
+}
+
 function DebateSection({ onOpenSubmit }: { onOpenSubmit: (topicId: string) => void }) {
+  const { user } = useAuth()
+  const myLevel = inferSchoolLevel(user?.grade)
+  const [level, setLevel] = useState<string>(user?.role === '学生' && myLevel ? myLevel : '全部')
+
+  const levels = ['全部', '小学高段', '初中', '高中']
+  const filteredTopics = level === '全部'
+    ? debateTopics
+    : debateTopics.filter((topic) => topic.schoolLevel === level)
+
   return (
     <SectionShell
       id="debate-lab"
       title="思辨论辩"
       description="围绕真实问题选择立场、陈述理由，并回应不同意见，完成一次讨论。"
     >
+      <HStack spacing={2} mb={4} flexWrap="wrap">
+        {levels.map((l) => (
+          <Button
+            key={l}
+            size="sm"
+            variant={level === l ? 'solid' : 'outline'}
+            colorScheme="orange"
+            borderRadius="full"
+            onClick={() => setLevel(l)}
+          >
+            {l}
+          </Button>
+        ))}
+      </HStack>
+
       <Stack spacing={5}>
-        {debateTopics.map((topic) => (
+        {filteredTopics.map((topic) => (
           <Box key={topic.id} bg="white" border="1px solid" borderColor="blackAlpha.100" borderRadius="lg" p={5}>
             <Badge colorScheme="orange">{topic.schoolLevel}</Badge>
             <Text mt={3} fontSize="lg" fontWeight={800} fontFamily="heading">

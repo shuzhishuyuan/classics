@@ -127,6 +127,22 @@ export const debateTopics: DebateTopic[] = [
     task: '选择一种立场，至少提出两条理由，并回应一条不同意见。',
     materials: ['数字传播是否扩大了接触人群', '内容压缩是否造成语境缺失', '互动形式是否促进了主动学习', '用户能否继续追溯原始资料'],
   },
+  {
+    id: 'borrow-return',
+    schoolLevel: '小学高段',
+    title: '借给同学的东西没按时还，要不要催他还？',
+    context: '从《白鹿洞书院揭示》“朋友有信”出发，讨论同学之间的诚信与体谅。',
+    task: '选择一种立场，至少提出一条理由。',
+    materials: ['什么是“朋友有信”', '催还会不会伤感情', '有没有既守信又不伤和气的办法'],
+  },
+  {
+    id: 'help-classmate',
+    schoolLevel: '小学高段',
+    title: '小组里有人做得慢，该不该帮他做？',
+    context: '从书院“教学相长”和同学相助的传统出发，讨论帮助与代劳的区别。',
+    task: '选择一种立场，至少提出一条理由。',
+    materials: ['帮助和代劳有什么不同', '让同学自己完成有什么好处', '什么时候应该搭把手'],
+  },
 ]
 
 export const ritualTasks: RitualTask[] = [
