@@ -1,4 +1,5 @@
 import type { Classic } from '../types'
+import { classicSourceAssets } from './classicAssets'
 
 /**
  * 书院文化教育平台 - 典籍资源核心数据
@@ -935,6 +936,11 @@ export const classicsData: Classic[] = [
     ],
   },
 ]
+
+for (const classic of classicsData) {
+  const sourceAssets = classicSourceAssets[classic.id]
+  if (sourceAssets) classic.sourceAssets = sourceAssets
+}
 
 /** 初始化热度值的基准时间 */
 export const DATA_VERSION = '1.0.0'

@@ -9,6 +9,66 @@ import DocumentPreview from '../components/DocumentPreview'
 import { fetchResourceDetail } from '../api/resources'
 import type { ResourceItem } from '../types/resource'
 
+function ResourceAttachments({ resource }: { resource: ResourceItem }) {
+  const assets = resource.assets || []
+  if (assets.length === 0) return null
+
+  const imageAssets = assets.filter((asset) => asset.kind === 'image')
+
+  return (
+    <Box mt={6} bg="white" borderRadius="xl" border="1px solid" borderColor="blackAlpha.100" p={6}>
+      <Text fontSize="lg" fontWeight={700} fontFamily="heading" color="gray.800" mb={4}>
+        📎 配套原件
+      </Text>
+      <VStack align="stretch" spacing={3}>
+        {assets.map((asset) => (
+          <Flex key={asset.url} justify="space-between" align="center" gap={4} wrap="wrap">
+            <HStack spacing={3} minW={0}>
+              <Text fontSize="lg">{asset.kind === 'video' ? '🎬' : asset.kind === 'image' ? '🖼️' : asset.kind === 'audio' ? '🎧' : '📄'}</Text>
+              <Text fontSize="sm" color="gray.700" noOfLines={1}>{asset.label}</Text>
+            </HStack>
+            <Button
+              as="a"
+              href={encodeURI(asset.url)}
+              target="_blank"
+              rel="noreferrer"
+              size="sm"
+              variant="outline"
+              colorScheme="green"
+              borderRadius="full"
+              flexShrink={0}
+            >
+              {asset.kind === 'image' ? '查看' : '打开原件'}
+            </Button>
+          </Flex>
+        ))}
+      </VStack>
+
+      {imageAssets.length > 0 && (
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} mt={6}>
+          {imageAssets.map((asset) => (
+            <Box key={`preview-${asset.url}`} as="a" href={encodeURI(asset.url)} target="_blank" rel="noreferrer">
+              <Box
+                as="img"
+                src={encodeURI(asset.url)}
+                alt={asset.label}
+                w="100%"
+                h="180px"
+                objectFit="contain"
+                bg="gray.50"
+                borderRadius="lg"
+                border="1px solid"
+                borderColor="blackAlpha.100"
+              />
+              <Text fontSize="xs" color="gray.500" mt={2} noOfLines={1}>{asset.label}</Text>
+            </Box>
+          ))}
+        </SimpleGrid>
+      )}
+    </Box>
+  )
+}
+
 function StudentResourceView({ resource, favorites, onToggleFavorite }: { resource: ResourceItem; favorites: string[]; onToggleFavorite: (id: string) => void }) {
   return (
     <Flex direction={{ base: 'column', lg: 'row' }} gap={6}>
@@ -100,6 +160,7 @@ export default function ResourceDetailPage() {
        resource.category === '学生学习' ? <StudentResourceView resource={resource} favorites={[]} onToggleFavorite={() => {}} /> :
        resource.category === '亲子共读' ? <FamilyResourceView resource={resource} /> :
        <DocumentPreview resource={resource} />}
+      <ResourceAttachments resource={resource} />
     </Box>
   )
 }

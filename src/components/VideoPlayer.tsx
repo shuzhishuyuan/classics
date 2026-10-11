@@ -48,6 +48,8 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
   const totalSeconds = parseInt(totalDuration) * 60 || 1800
 
   const content = mockVideoContent[resource.id] || mockVideoContent.default
+  const videoAsset = resource.assets?.find((asset) => asset.kind === 'video')
+  const hasRealVideo = Boolean(videoAsset)
 
   // 模拟播放进度
   useEffect(() => {
@@ -99,8 +101,8 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
           overflow="hidden"
           position="relative"
           boxShadow="0 8px 32px rgba(0,0,0,0.2)"
-          cursor={isPlaying ? 'default' : 'pointer'}
-          onClick={handlePlayPause}
+          cursor={hasRealVideo || isPlaying ? 'default' : 'pointer'}
+          onClick={hasRealVideo ? undefined : handlePlayPause}
         >
           {/* 模拟视频画面 */}
           <Box
@@ -111,7 +113,19 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
             bg="linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
             position="relative"
           >
-            {!isPlaying ? (
+            {videoAsset ? (
+              <Box
+                as="video"
+                src={encodeURI(videoAsset.url)}
+                controls
+                preload="metadata"
+                width="100%"
+                height="100%"
+                objectFit="contain"
+                bg="black"
+                aria-label={resource.title}
+              />
+            ) : !isPlaying ? (
               <VStack spacing={4}>
                 <Text fontSize="7xl" opacity={0.9}>{resource.coverEmoji || '🎬'}</Text>
                 <Text fontSize="2xl" fontWeight={700} fontFamily="heading" color="whiteAlpha.900" textAlign="center" px={8}>
@@ -155,86 +169,90 @@ export default function VideoPlayer({ resource }: VideoPlayerProps) {
             </Text>
           </Box>
 
-          {/* 进度条 */}
-          <Box px={0} bg="gray.800">
-            <Slider
-              value={totalSeconds > 0 ? (currentTime / totalSeconds) * 100 : 0}
-              onChange={handleSeek}
-              focusThumbOnChange={false}
-            >
-              <SliderTrack bg="whiteAlpha.300" h="4px" borderRadius="full">
-                <SliderFilledTrack bg="brand.primary" />
-              </SliderTrack>
-              <SliderThumb w="14px" h="14px" bg="brand.primary" />
-            </Slider>
-          </Box>
+          {!hasRealVideo && (
+            <>
+              {/* 进度条 */}
+              <Box px={0} bg="gray.800">
+                <Slider
+                  value={totalSeconds > 0 ? (currentTime / totalSeconds) * 100 : 0}
+                  onChange={handleSeek}
+                  focusThumbOnChange={false}
+                >
+                  <SliderTrack bg="whiteAlpha.300" h="4px" borderRadius="full">
+                    <SliderFilledTrack bg="brand.primary" />
+                  </SliderTrack>
+                  <SliderThumb w="14px" h="14px" bg="brand.primary" />
+                </Slider>
+              </Box>
 
-          {/* 控制栏 */}
-          <Flex
-            bg="gray.800"
-            px={5}
-            py={3}
-            align="center"
-            justify="space-between"
-            gap={4}
-          >
-            <HStack spacing={3}>
-              {/* 播放/暂停 */}
-              <IconButton
-                aria-label={isPlaying ? '暂停' : '播放'}
-                icon={<Text fontSize="lg">{isPlaying ? '⏸' : '▶'}</Text>}
-                size="sm"
-                variant="ghost"
-                color="white"
-                _hover={{ bg: 'whiteAlpha.200' }}
-                onClick={(e) => { e.stopPropagation(); handlePlayPause() }}
-              />
-
-              {/* 时间 */}
-              <Text fontSize="sm" color="whiteAlpha.800" fontFamily="mono" minW="100px">
-                {formatTime(currentTime)} / {formatTime(totalSeconds)}
-              </Text>
-
-              {/* 音量 */}
-              <Tooltip label={isMuted ? '取消静音' : '静音'}>
-                <IconButton
-                  aria-label="音量"
-                  icon={<Text fontSize="md">{isMuted ? '🔇' : '🔊'}</Text>}
-                  size="sm"
-                  variant="ghost"
-                  color="white"
-                  _hover={{ bg: 'whiteAlpha.200' }}
-                  onClick={(e) => { e.stopPropagation(); handleVolumeToggle() }}
-                />
-              </Tooltip>
-            </HStack>
-
-            <HStack spacing={3}>
-              {/* 倍速 */}
-              <Button
-                size="xs"
-                variant="outline"
-                color="whiteAlpha.800"
-                borderColor="whiteAlpha.400"
-                _hover={{ bg: 'whiteAlpha.200' }}
-                borderRadius="full"
-                onClick={(e) => { e.stopPropagation(); handleSpeedChange() }}
+              {/* 控制栏 */}
+              <Flex
+                bg="gray.800"
+                px={5}
+                py={3}
+                align="center"
+                justify="space-between"
+                gap={4}
               >
-                倍速 {playbackRate}x
-              </Button>
+                <HStack spacing={3}>
+                  {/* 播放/暂停 */}
+                  <IconButton
+                    aria-label={isPlaying ? '暂停' : '播放'}
+                    icon={<Text fontSize="lg">{isPlaying ? '⏸' : '▶'}</Text>}
+                    size="sm"
+                    variant="ghost"
+                    color="white"
+                    _hover={{ bg: 'whiteAlpha.200' }}
+                    onClick={(e) => { e.stopPropagation(); handlePlayPause() }}
+                  />
 
-              {/* 全屏 */}
-              <IconButton
-                aria-label="全屏"
-                icon={<Text fontSize="md">⛶</Text>}
-                size="sm"
-                variant="ghost"
-                color="white"
-                _hover={{ bg: 'whiteAlpha.200' }}
-                onClick={(e) => { e.stopPropagation(); toast({ title: '全屏模式', status: 'info', duration: 1500, position: 'top' }) }}
-              />
-            </HStack>
-          </Flex>
+                  {/* 时间 */}
+                  <Text fontSize="sm" color="whiteAlpha.800" fontFamily="mono" minW="100px">
+                    {formatTime(currentTime)} / {formatTime(totalSeconds)}
+                  </Text>
+
+                  {/* 音量 */}
+                  <Tooltip label={isMuted ? '取消静音' : '静音'}>
+                    <IconButton
+                      aria-label="音量"
+                      icon={<Text fontSize="md">{isMuted ? '🔇' : '🔊'}</Text>}
+                      size="sm"
+                      variant="ghost"
+                      color="white"
+                      _hover={{ bg: 'whiteAlpha.200' }}
+                      onClick={(e) => { e.stopPropagation(); handleVolumeToggle() }}
+                    />
+                  </Tooltip>
+                </HStack>
+
+                <HStack spacing={3}>
+                  {/* 倍速 */}
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    color="whiteAlpha.800"
+                    borderColor="whiteAlpha.400"
+                    _hover={{ bg: 'whiteAlpha.200' }}
+                    borderRadius="full"
+                    onClick={(e) => { e.stopPropagation(); handleSpeedChange() }}
+                  >
+                    倍速 {playbackRate}x
+                  </Button>
+
+                  {/* 全屏 */}
+                  <IconButton
+                    aria-label="全屏"
+                    icon={<Text fontSize="md">⛶</Text>}
+                    size="sm"
+                    variant="ghost"
+                    color="white"
+                    _hover={{ bg: 'whiteAlpha.200' }}
+                    onClick={(e) => { e.stopPropagation(); toast({ title: '全屏模式', status: 'info', duration: 1500, position: 'top' }) }}
+                  />
+                </HStack>
+              </Flex>
+            </>
+          )}
         </Box>
 
         {/* 视频下方：课程信息标签页 */}

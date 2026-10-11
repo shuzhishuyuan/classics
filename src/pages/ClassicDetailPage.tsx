@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Box, Text, HStack, VStack, Badge, Button, IconButton, Tooltip, Divider,
-  Flex, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Collapse, Spinner,
+  Flex, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Collapse, Spinner, SimpleGrid,
 } from '@chakra-ui/react'
 import { ChevronLeftIcon, HeartIcon, HeartOutlineIcon, StarIcon, StarOutlineIcon, ChevronRightIcon } from '../components/Icons'
 import { fetchClassicDetail } from '../api/classics'
@@ -127,6 +127,44 @@ export default function ClassicDetailPage() {
             })}
           </Box>
         </Box>
+
+        {classic.sourceAssets && classic.sourceAssets.length > 0 && (
+          <Box mt={8}>
+            <Text fontSize="xl" fontWeight={700} fontFamily="heading" color="gray.800" mb={4}>原件资料</Text>
+            <Text fontSize="sm" color="gray.500" mb={4}>
+              以下为本典籍对应的扫描图或资料原件，可点击查看大图。
+            </Text>
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+              {classic.sourceAssets.map((asset) => (
+                <Box
+                  key={asset.url}
+                  as="a"
+                  href={encodeURI(asset.url)}
+                  target="_blank"
+                  rel="noreferrer"
+                  bg="white"
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor="blackAlpha.100"
+                  overflow="hidden"
+                  _hover={{ borderColor: 'brand.primary', boxShadow: 'md' }}
+                  transition="all 0.2s"
+                >
+                  <Box
+                    as="img"
+                    src={encodeURI(asset.url)}
+                    alt={asset.label}
+                    w="100%"
+                    h="220px"
+                    objectFit="contain"
+                    bg="gray.50"
+                  />
+                  <Text px={4} py={3} fontSize="sm" color="gray.700" noOfLines={1}>{asset.label}</Text>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
       </Box>
     </Box>
   )
