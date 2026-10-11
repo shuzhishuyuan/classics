@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
-  Box, Text, HStack, VStack, Button, Flex,
+  Box, Text, HStack, VStack, Button, Flex, IconButton,
   Breadcrumb, BreadcrumbItem, BreadcrumbLink, Divider, Spinner,
 } from '@chakra-ui/react'
 import { ChevronLeftIcon, ChevronRightIcon } from '../components/Icons'
@@ -10,8 +10,6 @@ import { saveProgress } from '../api/learning'
 import { useSpeech, splitSentences, isSpeechSupported } from '../hooks/useSpeech'
 import type { Classic, Chapter } from '../types'
 
-type SpeakTarget = 'original' | 'translation' | null
-
 /** 朗读高亮样式 */
 const highlightStyle: React.CSSProperties = {
   background: '#FEF3C7',
@@ -19,17 +17,24 @@ const highlightStyle: React.CSSProperties = {
   transition: 'background 0.15s',
 }
 
+/** 按换行拆段落 */
+function splitParagraphs(text: string): string[] {
+  return text.split('\n').map(s => s.trim()).filter(s => s.length > 0)
+}
+
 export default function ReaderPage() {
   const { id, volumeId, chapterId } = useParams<{ id: string; volumeId: string; chapterId: string }>()
   const navigate = useNavigate()
   const [classic, setClassic] = useState<Classic | null>(null)
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null)
-  const [showTranslation, setShowTranslation] = useState(false)
   const [showNote, setShowNote] = useState(false)
   const [loading, setLoading] = useState(true)
+  // 分段触发状态
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [expandedAll, setExpandedAll] = useState(false)
+  const [speakingParaIndex, setSpeakingParaIndex] = useState<number | null>(null)
 
   const { isPlaying, isPaused, currentIndex, speak, pause, resume, stop } = useSpeech()
-  const [speakTarget, setSpeakTarget] = useState<SpeakTarget>(null)
   const speechSupported = isSpeechSupported()
 
   useEffect(() => {
@@ -45,49 +50,73 @@ export default function ReaderPage() {
     })
   }, [id, chapterId])
 
-  // 切换章节时停止朗读
+  // 切换章节时停止朗读 + 重置分段状态
   useEffect(() => {
     stop()
-    setSpeakTarget(null)
+    setSpeakingParaIndex(null)
+    setExpandedIndex(null)
+    setExpandedAll(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapterId])
 
-  // 拆句
-  const sentences = useMemo(() => {
+  // 段落拆分
+  const paragraphs = useMemo(() => {
+    if (!currentChapter) return []
+    return splitParagraphs(currentChapter.content.original)
+  }, [currentChapter])
+
+  const translationParagraphs = useMemo(() => {
+    if (!currentChapter?.content.translation) return []
+    return splitParagraphs(currentChapter.content.translation)
+  }, [currentChapter])
+
+  // 每个段落对应的全局句子起始索引（用于全文朗读时的逐句高亮）
+  const paragraphStartIndexes = useMemo(() => {
+    let start = 0
+    return paragraphs.map(para => {
+      const current = start
+      start += splitSentences(para).length
+      return current
+    })
+  }, [paragraphs])
+
+  // 全文句子数组
+  const allSentences = useMemo(() => {
     if (!currentChapter) return []
     return splitSentences(currentChapter.content.original)
   }, [currentChapter])
 
-  const translationSentences = useMemo(() => {
-    if (!currentChapter?.content.translation) return []
-    return splitSentences(currentChapter.content.translation)
-  }, [currentChapter])
-
-  /** 停止朗读（含清空目标） */
   const handleStop = useCallback(() => {
     stop()
-    setSpeakTarget(null)
+    setSpeakingParaIndex(null)
   }, [stop])
 
-  /** 朗读原文 */
-  const handleSpeakOriginal = useCallback(() => {
-    if (sentences.length === 0) return
-    if (isPlaying && speakTarget === 'original') { pause(); return }
-    if (isPaused && speakTarget === 'original') { resume(); return }
-    handleStop()
-    setSpeakTarget('original')
-    speak(sentences)
-  }, [sentences, isPlaying, isPaused, speakTarget, pause, resume, handleStop, speak])
+  /** 朗读全文 */
+  const handleSpeakFull = useCallback(() => {
+    if (isPlaying || isPaused) { handleStop(); return }
+    setSpeakingParaIndex(null)
+    speak(allSentences)
+  }, [isPlaying, isPaused, handleStop, allSentences, speak])
 
-  /** 朗读译文 */
-  const handleSpeakTranslation = useCallback(() => {
-    if (translationSentences.length === 0) return
-    if (isPlaying && speakTarget === 'translation') { pause(); return }
-    if (isPaused && speakTarget === 'translation') { resume(); return }
-    handleStop()
-    setSpeakTarget('translation')
-    speak(translationSentences)
-  }, [translationSentences, isPlaying, isPaused, speakTarget, pause, resume, handleStop, speak])
+  /** 朗读某段 */
+  const handleSpeakParagraph = useCallback((i: number) => {
+    if (speakingParaIndex === i && (isPlaying || isPaused)) { handleStop(); return }
+    const sentences = splitSentences(paragraphs[i])
+    stop()
+    setSpeakingParaIndex(i)
+    speak(sentences)
+  }, [speakingParaIndex, isPlaying, isPaused, handleStop, paragraphs, stop, speak])
+
+  /** 切换段落译文展开 */
+  const toggleParagraph = useCallback((i: number) => {
+    setExpandedAll(false)
+    setExpandedIndex(prev => prev === i ? null : i)
+  }, [])
+
+  const toggleExpandAll = useCallback(() => {
+    setExpandedAll(prev => !prev)
+    setExpandedIndex(null)
+  }, [])
 
   if (loading) return <Box textAlign="center" pt="120px"><Spinner color="brand.primary" size="lg" /></Box>
   if (!classic || !currentChapter) return (
@@ -122,19 +151,19 @@ export default function ReaderPage() {
           {currentChapter.title}
         </Text>
 
-        {/* 功能按钮 + 朗读控制 */}
+        {/* 功能按钮 */}
         <HStack spacing={3} mb={4} justify="center" flexWrap="wrap">
-          <Button size="sm" variant={showTranslation ? 'solid' : 'outline'} colorScheme="green" borderRadius="full"
-            onClick={() => setShowTranslation(!showTranslation)}>{showTranslation ? '隐藏译文' : '显示译文'}</Button>
+          <Button size="sm" variant={expandedAll ? 'solid' : 'outline'} colorScheme="green" borderRadius="full"
+            onClick={toggleExpandAll}>{expandedAll ? '收起全部译文' : '展开全部译文'}</Button>
           <Button size="sm" variant={showNote ? 'solid' : 'outline'} colorScheme="orange" borderRadius="full"
             onClick={() => setShowNote(!showNote)}>{showNote ? '隐藏解读' : '文化解读'}</Button>
 
           {speechSupported && (
-            speakTarget === 'original' && (isPlaying || isPaused) ? (
+            (isPlaying || isPaused) ? (
               <>
                 <Button size="sm" variant="solid" colorScheme="teal" borderRadius="full"
                   leftIcon={<Text fontSize="sm">{isPaused ? '▶' : '⏸'}</Text>}
-                  onClick={handleSpeakOriginal}>
+                  onClick={isPaused ? resume : pause}>
                   {isPaused ? '继续' : '暂停'}
                 </Button>
                 <Button size="sm" variant="outline" colorScheme="gray" borderRadius="full"
@@ -143,74 +172,80 @@ export default function ReaderPage() {
             ) : (
               <Button size="sm" variant="solid" colorScheme="teal" borderRadius="full"
                 leftIcon={<Text fontSize="sm">🔊</Text>}
-                onClick={handleSpeakOriginal}>
-                朗读原文
+                onClick={handleSpeakFull}>
+                朗读全文
               </Button>
             )
           )}
         </HStack>
 
-        <Box bg="white" borderRadius="2xl" p={10} boxShadow="sm" border="1px solid" borderColor="blackAlpha.100">
-          {/* 原文 */}
-          <Box mb={showTranslation || showNote ? 6 : 0}>
-            <Text fontSize={{ base: 'md', md: 'lg' }} lineHeight="2.2" color="gray.800" letterSpacing={1}
-              fontFamily="heading" whiteSpace="pre-wrap">
-              {sentences.map((s, i) => (
-                <span
-                  key={i}
-                  style={i === currentIndex && speakTarget === 'original' ? highlightStyle : undefined}
-                >
-                  {s}
-                </span>
-              ))}
-            </Text>
-          </Box>
+        {/* 提示语 */}
+        <Text fontSize="xs" color="gray.400" textAlign="center" mb={4}>
+          {speechSupported ? '点击段落查看对应译文 · 点击段落右侧 🔊 朗读该段' : '点击段落查看对应译文'}
+        </Text>
 
-          {/* 译文（含朗读按钮 + 高亮） */}
-          {showTranslation && currentChapter.content.translation && (
-            <>
-              <Divider mb={4} />
-              <Box>
-                <Flex justify="space-between" align="center" mb={2}>
-                  <Text fontSize="sm" fontWeight={700} color="brand.primary" fontFamily="heading">📝 白话译文</Text>
-                  {speechSupported && (
-                    speakTarget === 'translation' && (isPlaying || isPaused) ? (
-                      <HStack spacing={1.5}>
-                        <Button size="xs" variant="solid" colorScheme="teal" borderRadius="full"
-                          leftIcon={<Text fontSize="xs">{isPaused ? '▶' : '⏸'}</Text>}
-                          onClick={handleSpeakTranslation}>
-                          {isPaused ? '继续' : '暂停'}
-                        </Button>
-                        <Button size="xs" variant="outline" colorScheme="gray" borderRadius="full"
-                          onClick={handleStop}>⏹ 停止</Button>
-                      </HStack>
-                    ) : (
-                      <Button size="xs" variant="outline" colorScheme="teal" borderRadius="full"
-                        leftIcon={<Text fontSize="xs">🔊</Text>}
-                        onClick={handleSpeakTranslation}>
-                        朗读译文
-                      </Button>
-                    )
+        <Box bg="white" borderRadius="2xl" p={{ base: 4, md: 10 }} boxShadow="sm" border="1px solid" borderColor="blackAlpha.100">
+          {/* 原文段落（分段触发） */}
+          <VStack spacing={2} align="stretch">
+            {paragraphs.map((para, i) => {
+              const sentences = splitSentences(para)
+              const isSpeakingPara = speakingParaIndex === i
+              const isExpanded = expandedAll || expandedIndex === i
+              const hasTranslation = !!translationParagraphs[i]
+
+              return (
+                <Box
+                  key={i}
+                  p={3}
+                  borderRadius="lg"
+                  cursor="pointer"
+                  bg={isSpeakingPara ? '#FEF3C7' : 'transparent'}
+                  _hover={{ bg: isSpeakingPara ? '#FEF3C7' : '#FAFAF5' }}
+                  transition="background 0.15s"
+                  onClick={() => toggleParagraph(i)}
+                >
+                  {/* 段落原文 + 朗读按钮 */}
+                  <Flex justify="space-between" align="flex-start" gap={3}>
+                    <Text fontSize={{ base: 'md', md: 'lg' }} lineHeight="2.2" color="gray.800" letterSpacing={1}
+                      fontFamily="heading" whiteSpace="pre-wrap" flex={1}>
+                      {sentences.map((s, si) => {
+                        const globalIndex = paragraphStartIndexes[i] + si
+                        const isHighlighted = speakingParaIndex === null && globalIndex === currentIndex
+                        return (
+                          <span key={si} style={isHighlighted ? highlightStyle : undefined}>{s}</span>
+                        )
+                      })}
+                    </Text>
+                    {speechSupported && (
+                      <IconButton
+                        aria-label="朗读本段"
+                        icon={<Text fontSize="md">🔊</Text>}
+                        size="sm"
+                        variant="ghost"
+                        color={isSpeakingPara ? 'brand.primary' : 'gray.400'}
+                        flexShrink={0}
+                        onClick={(e) => { e.stopPropagation(); handleSpeakParagraph(i) }}
+                      />
+                    )}
+                  </Flex>
+
+                  {/* 段落译文（展开时显示） */}
+                  {isExpanded && hasTranslation && (
+                    <Box mt={3} pt={3} borderTop="1px dashed" borderColor="gray.200">
+                      <Text fontSize="sm" lineHeight="1.8" color="gray.600" whiteSpace="pre-wrap">
+                        {translationParagraphs[i]}
+                      </Text>
+                    </Box>
                   )}
-                </Flex>
-                <Text fontSize="sm" lineHeight="1.8" color="gray.600" whiteSpace="pre-wrap">
-                  {translationSentences.map((s, i) => (
-                    <span
-                      key={i}
-                      style={i === currentIndex && speakTarget === 'translation' ? highlightStyle : undefined}
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </Text>
-              </Box>
-            </>
-          )}
+                </Box>
+              )
+            })}
+          </VStack>
 
           {/* 文化解读 */}
           {showNote && currentChapter.content.culturalNote && (
             <>
-              <Divider mb={4} />
+              <Divider mt={6} mb={4} />
               <Box><Text fontSize="sm" fontWeight={700} color="brand.secondary" fontFamily="heading" mb={2}>📖 文化解读</Text>
                 <Text fontSize="sm" lineHeight="1.8" color="gray.600" whiteSpace="pre-wrap">{currentChapter.content.culturalNote}</Text></Box>
             </>
