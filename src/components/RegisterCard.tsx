@@ -41,11 +41,11 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
     <Box maxW="420px" mx="auto" w="full">
       <Box
         bg="white"
-        borderRadius="2xl"
+        borderRadius="lg"
         border="1px solid"
-        borderColor="blackAlpha.100"
-        boxShadow="sm"
-        p={8}
+        borderColor="#DEE8E2"
+        boxShadow="0 8px 32px rgba(30, 68, 55, 0.06)"
+        p={{ base: 6, md: 8 }}
       >
         <Text
           fontSize="lg"
@@ -71,7 +71,7 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
               bg="gray.50"
               border="1px solid"
               borderColor="gray.200"
-              borderRadius="xl"
+              borderRadius="md"
               fontSize="sm"
               _focus={{ bg: 'white', borderColor: 'brand.primary' }}
             />
@@ -89,7 +89,7 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
               bg="gray.50"
               border="1px solid"
               borderColor="gray.200"
-              borderRadius="xl"
+              borderRadius="md"
               fontSize="sm"
               _focus={{ bg: 'white', borderColor: 'brand.primary' }}
             />
@@ -108,7 +108,7 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
               bg="gray.50"
               border="1px solid"
               borderColor="gray.200"
-              borderRadius="xl"
+              borderRadius="md"
               fontSize="sm"
               _focus={{ bg: 'white', borderColor: 'brand.primary' }}
             />
@@ -127,7 +127,7 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
               bg="gray.50"
               border="1px solid"
               borderColor="gray.200"
-              borderRadius="xl"
+              borderRadius="md"
               fontSize="sm"
               _focus={{ bg: 'white', borderColor: 'brand.primary' }}
             />
@@ -147,7 +147,7 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
             color="white"
             _hover={{ bg: '#7d5f3f' }}
             _active={{ bg: '#7d5f3f' }}
-            borderRadius="full"
+            borderRadius="md"
             w="full"
             fontWeight={600}
             fontSize="md"
