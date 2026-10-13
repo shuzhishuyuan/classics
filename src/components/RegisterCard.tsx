@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import {
-  Box, Text, VStack, HStack, Input, InputGroup, InputLeftElement,
+  Box, Text, VStack, HStack, Input, InputGroup, InputLeftElement, Icon,
   Button,
 } from '@chakra-ui/react'
+import { FiUser } from 'react-icons/fi'
 import { PhoneIcon, LockIcon } from './Icons'
 
 interface RegisterCardProps {
@@ -39,21 +40,12 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
 
   return (
     <Box maxW="420px" mx="auto" w="full">
-      <Box
-        bg="white"
-        borderRadius="lg"
-        border="1px solid"
-        borderColor="#DEE8E2"
-        boxShadow="0 8px 32px rgba(30, 68, 55, 0.06)"
-        p={{ base: 6, md: 8 }}
-      >
+      <Box>
         <Text
-          fontSize="lg"
-          fontWeight={700}
-          fontFamily="heading"
-          color="gray.800"
-          mb={6}
-          textAlign="center"
+          fontSize="sm"
+          fontWeight={600}
+          color="gray.500"
+          mb={4}
         >
           注册账号
         </Text>
@@ -80,7 +72,7 @@ export default function RegisterCard({ onRegister, onSwitchToLogin }: RegisterCa
           {/* 姓名 */}
           <InputGroup size="lg">
             <InputLeftElement pointerEvents="none">
-              <Text fontSize="sm" color="gray.400">👤</Text>
+              <Icon as={FiUser} color="gray.400" />
             </InputLeftElement>
             <Input
               placeholder="请输入姓名（1-10个字符）"

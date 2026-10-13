@@ -36,21 +36,12 @@ export default function LoginCard({ onLogin, onSwitchToRegister }: LoginCardProp
 
   return (
     <Box maxW="420px" mx="auto" w="full">
-      <Box
-        bg="white"
-        borderRadius="lg"
-        border="1px solid"
-        borderColor="#DEE8E2"
-        boxShadow="0 8px 32px rgba(30, 68, 55, 0.06)"
-        p={{ base: 6, md: 8 }}
-      >
+      <Box>
         <Text
-          fontSize="lg"
-          fontWeight={700}
-          fontFamily="heading"
-          color="gray.800"
-          mb={6}
-          textAlign="center"
+          fontSize="sm"
+          fontWeight={600}
+          color="gray.500"
+          mb={4}
         >
           账号登录
         </Text>

@@ -12,3 +12,16 @@ Source: https://github.com/microsoft/fluentui-emoji
 
 Animations are provided locally in `src/pages/homePage.css`; the page does
 not fetch artwork from external services at runtime.
+
+## Reading student
+
+`reading-student.svg` is assembled from the Open Peeps hand-drawn illustration
+library by Pablo Stanley. Open Peeps artwork is available under CC0. The SVG
+component implementation used to export this local asset is `react-peeps` by
+Emre Cakir, distributed under the MIT license included in
+`OPEN-PEEPS-LICENSE`.
+
+Sources:
+
+- https://www.openpeeps.com/
+- https://github.com/CeamKrier/react-peeps

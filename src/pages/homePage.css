@@ -1,167 +1,331 @@
-.login-cover {
-  max-width: 1160px;
+.login-page {
+  max-width: 1280px;
   min-height: calc(100svh - 80px);
   margin: 0 auto;
-  padding: 24px 32px 28px;
+  padding: 32px 40px 24px;
   letter-spacing: 0;
 }
 
-.login-cover__heading {
-  margin-bottom: 32px;
-}
-
-.login-cover__entrance {
+.login-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 400px) minmax(0, 1fr);
-  align-items: center;
-  gap: 36px;
-  max-width: 1000px;
-  margin: 0 auto;
+  grid-template-columns: minmax(0, 1.22fr) minmax(360px, .78fr);
+  min-height: 610px;
+  overflow: hidden;
+  border: 1px solid #d9dfda;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(24, 55, 46, .08);
 }
 
-.login-cover__form {
+.login-stage__visual {
+  position: relative;
   min-width: 0;
+  overflow: hidden;
+  padding: 48px 56px;
+  background-color: #e9efe8;
+  background-image:
+    linear-gradient(rgba(35, 76, 63, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35, 76, 63, .055) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-.academy-companion {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
-  user-select: none;
+.login-stage__visual::after {
+  content: '';
+  position: absolute;
+  right: -42px;
+  bottom: -70px;
+  width: 340px;
+  height: 170px;
+  border: 1px solid rgba(150, 92, 48, .28);
+  border-radius: 50% 50% 0 0;
+  transform: rotate(-8deg);
+}
+
+.login-stage__brand {
+  position: relative;
+  z-index: 3;
+  max-width: 470px;
+}
+
+.login-stage__logo {
+  display: block;
+  width: 300px;
+  max-width: 72%;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.login-stage__eyebrow {
+  margin: 0 0 12px;
+  color: #95633f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.login-stage__brand h1 {
+  margin: 0;
+  color: #173f38;
+  font-family: "Noto Serif SC", "思源宋体", serif;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.32;
+  letter-spacing: 0;
+}
+
+.login-stage__intro {
+  margin: 18px 0 0;
+  color: #5d6d67;
+  font-size: 15px;
+  line-height: 1.95;
+}
+
+.login-stage__intro span {
+  display: block;
+}
+
+.reading-scene {
+  position: absolute;
+  right: 4%;
+  bottom: 10px;
+  z-index: 2;
+  width: min(48%, 330px);
+  height: 390px;
   pointer-events: none;
 }
 
-.academy-companion__portrait {
-  position: relative;
-  width: 220px;
-  max-width: 100%;
-  aspect-ratio: 1;
+.reading-scene__person {
+  position: absolute;
+  right: 0;
+  bottom: 26px;
+  width: 100%;
+  height: 100%;
+  animation: student-breathe 5.5s ease-in-out infinite;
+  transform-origin: center bottom;
 }
 
-.academy-companion__student {
+.reading-scene__person img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  animation: academy-welcome 6s ease-in-out infinite;
-  transform-origin: center bottom;
+  overflow: visible;
 }
 
-.academy-companion--right .academy-companion__student {
-  animation-delay: -3s;
-}
-
-.academy-companion__object {
+.reading-scene__desk {
   position: absolute;
-  bottom: -5px;
-  right: -12px;
-  width: 82px;
-  height: 82px;
-  object-fit: contain;
-  animation: academy-book 7s ease-in-out infinite;
+  left: -15%;
+  right: -5%;
+  bottom: 14px;
+  height: 16px;
+  border-radius: 2px;
+  background: #95633f;
+  box-shadow: 0 7px 0 #774b2f;
 }
 
-.academy-companion--right .academy-companion__object {
-  left: -12px;
-  right: auto;
-  animation-delay: -3.5s;
+.reading-scene__book {
+  position: absolute;
+  left: 16%;
+  bottom: 13px;
+  width: 72px;
+  height: 34px;
+  border: 2px solid #173f38;
+  border-bottom: 5px solid #173f38;
+  border-radius: 3px 12px 3px 3px;
+  background: #f6e6b3;
+  animation: book-page 4.4s ease-in-out infinite;
+  transform-origin: left bottom;
 }
 
-.academy-companion__quote {
-  width: 100%;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #e4ece8;
-  text-align: center;
-  font-family: "Noto Serif SC", "思源宋体", serif;
+.reading-scene__inkstone {
+  position: absolute;
+  right: 10%;
+  bottom: 15px;
+  width: 42px;
+  height: 10px;
+  border-radius: 50%;
+  background: #173f38;
 }
 
-.academy-companion__quote p {
-  margin: 0 0 6px;
-  color: #274d45;
-  font-size: 20px;
-}
-
-.academy-companion__quote span {
-  color: #7b8581;
+.reading-scene__seal {
+  position: absolute;
+  top: 38px;
+  right: -8px;
+  z-index: 4;
+  width: 48px;
+  height: 48px;
+  padding-top: 5px;
+  border: 2px solid #a74d35;
+  color: #a74d35;
+  font-family: "Noto Serif SC", serif;
   font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  transform: rotate(4deg);
 }
 
-.login-cover__footer {
-  margin-top: 40px;
-  padding-top: 24px;
-  border-top: 1px solid #edf1ee;
+.reading-scene__leaf {
+  position: absolute;
+  z-index: 5;
+  width: 13px;
+  height: 28px;
+  border-radius: 100% 0 100% 0;
+  background: #95633f;
+  opacity: .72;
+  animation: falling-leaf 6s ease-in-out infinite;
 }
 
-@keyframes academy-welcome {
-  0%, 100% { transform: translateY(0) rotate(-1deg); }
-  50% { transform: translateY(-8px) rotate(1deg); }
+.reading-scene__leaf--one { top: 65px; left: 2%; }
+.reading-scene__leaf--two { top: 105px; left: 12%; animation-delay: -2.7s; transform: scale(.7); }
+
+.login-stage__quote {
+  position: absolute;
+  left: 56px;
+  bottom: 46px;
+  z-index: 3;
+  margin: 0;
+  color: #31584e;
+  font-family: "Noto Serif SC", "思源宋体", serif;
+  font-size: 17px;
 }
 
-@keyframes academy-book {
-  0%, 100% { transform: translateY(0) rotate(4deg); }
-  50% { transform: translateY(-5px) rotate(-3deg); }
+.login-stage__quote span {
+  color: #95633f;
+  font-size: 28px;
 }
 
-@media (max-width: 991px) {
-  .login-cover {
-    padding: 18px 20px 24px;
-  }
+.login-stage__auth {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 56px 54px;
+}
 
-  .login-cover__heading {
-    margin-bottom: 18px;
-  }
+.login-stage__auth-heading {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 26px;
+}
 
-  .login-cover__entrance {
-    max-width: 400px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 24px;
-  }
+.login-stage__auth-heading p {
+  margin: 0 0 8px;
+  color: #95633f;
+  font-size: 13px;
+  font-weight: 700;
+}
 
-  .academy-companion--left {
-    grid-column: 1;
-    grid-row: 1;
-  }
+.login-stage__auth-heading h2 {
+  margin: 0 0 8px;
+  color: #173f38;
+  font-family: "Noto Serif SC", "思源宋体", serif;
+  font-size: 28px;
+  line-height: 1.35;
+}
 
-  .academy-companion--right {
+.login-stage__auth-heading span {
+  color: #7b8682;
+  font-size: 13px;
+}
+
+.login-page__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 22px 4px 0;
+}
+
+@keyframes student-breathe {
+  0%, 100% { transform: translateY(0) rotate(-.4deg); }
+  50% { transform: translateY(-7px) rotate(.5deg); }
+}
+
+@keyframes book-page {
+  0%, 35%, 100% { transform: perspective(100px) rotateY(0); }
+  50%, 64% { transform: perspective(100px) rotateY(-16deg); }
+}
+
+@keyframes falling-leaf {
+  0%, 100% { transform: translate(0, 0) rotate(8deg); opacity: .18; }
+  45% { opacity: .72; }
+  70% { transform: translate(26px, 46px) rotate(95deg); opacity: .55; }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .login-stage__brand h1 { font-size: 42px; }
+  .login-stage__intro-detail { display: none !important; }
+}
+
+@media (max-width: 900px) {
+  .login-page { padding: 22px 24px; }
+  .login-stage { grid-template-columns: 1fr; }
+  .login-stage__visual { min-height: 430px; padding: 36px 40px; }
+  .login-stage__brand h1 { font-size: 38px; }
+  .login-stage__logo { width: 260px; margin-bottom: 22px; }
+  .reading-scene { width: 270px; height: 320px; }
+  .login-stage__quote { left: 40px; bottom: 38px; }
+  .login-stage__auth { padding: 44px 48px 50px; }
+  .login-page__footer { flex-direction: column; }
+}
+
+@media (max-width: 560px) {
+  .login-page { padding: 12px; }
+  .login-stage__visual {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 142px;
+    grid-template-rows: auto 190px;
+    min-height: 0;
+    padding: 28px 24px 22px;
+  }
+  .login-stage__brand { grid-column: 1 / -1; }
+  .login-stage__logo { width: 230px; max-width: 78%; margin-bottom: 20px; }
+  .login-stage__eyebrow { font-size: 11px; }
+  .login-stage__brand h1 { max-width: none; font-size: 28px; }
+  .login-stage__intro { max-width: none; font-size: 13px; line-height: 1.75; }
+  .login-stage__intro-detail { display: none !important; }
+  .reading-scene {
+    position: relative;
+    right: auto;
+    bottom: auto;
     grid-column: 2;
-    grid-row: 1;
-  }
-
-  .academy-companion__portrait {
-    width: 92px;
-  }
-
-  .academy-companion__object {
-    width: 38px;
-    height: 38px;
-    right: -14px;
-    bottom: 0;
-  }
-
-  .academy-companion--right .academy-companion__object {
-    left: -14px;
-  }
-
-  .academy-companion__quote {
-    display: none;
-  }
-
-  .login-cover__form {
-    grid-column: 1 / -1;
     grid-row: 2;
+    align-self: end;
+    width: 142px;
+    height: 188px;
   }
+  .reading-scene__seal { display: none; }
+  .reading-scene__desk { left: -5%; }
+  .reading-scene__book { width: 50px; height: 24px; }
+  .login-stage__quote {
+    position: static;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    margin: 0 8px 24px 0;
+    font-size: 12px;
+  }
+  .login-stage__quote span { font-size: inherit; }
+  .login-stage__auth { padding: 36px 24px 40px; }
+  .login-stage__auth-heading h2 { font-size: 24px; }
+  .login-page__footer { padding-top: 18px; }
+}
 
-  .login-cover__footer {
-    margin-top: 28px;
-    padding-top: 20px;
+@media (max-width: 360px) {
+  .login-stage__visual {
+    grid-template-columns: minmax(0, 1fr) 128px;
+    grid-template-rows: auto 168px;
+    padding-inline: 18px;
   }
+  .login-stage__brand h1 { font-size: 25px; }
+  .reading-scene { width: 128px; height: 162px; }
+  .login-stage__quote { display: none; }
+  .login-stage__auth { padding-inline: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .academy-companion__student,
-  .academy-companion__object {
+  .reading-scene__person,
+  .reading-scene__book,
+  .reading-scene__leaf {
     animation: none;
   }
 }
