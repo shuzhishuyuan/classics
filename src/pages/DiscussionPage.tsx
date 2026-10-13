@@ -65,6 +65,8 @@ import { useDiscussionStore } from '../stores/discussionStore'
 import { useAuth } from '../hooks/useAuth'
 import { seedDiscussions } from '../data/discussion'
 import type { DiscussionReply } from '../types'
+import ChatRoomModal from '../components/ChatRoomModal'
+import RoundTableModal from '../components/RoundTableModal'
 
 const MotionBox = chakra(motion.div, {
   shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
@@ -921,6 +923,8 @@ function SubmissionModal({
 
 export default function DiscussionPage() {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const chatRoom = useDisclosure()
+  const roundTable = useDisclosure()
   const [selectedTopicId, setSelectedTopicId] = useState<string | undefined>()
   const [selectedTrack, setSelectedTrack] = useState<CreationTrack | undefined>()
   const discussions = useDiscussionStore((state) => state.discussions)
@@ -970,6 +974,12 @@ export default function DiscussionPage() {
               <HStack mt={5} spacing={3} flexWrap="wrap">
                 <Button colorScheme="green" onClick={() => document.getElementById('classic-seminar')?.scrollIntoView({ behavior: 'smooth' })}>
                   开始会讲
+                </Button>
+                <Button colorScheme="orange" onClick={roundTable.onOpen}>
+                  🪑 圆桌会讲
+                </Button>
+                <Button colorScheme="teal" variant="outline" onClick={chatRoom.onOpen}>
+                  💬 聊天室
                 </Button>
                 <Button variant="outline" onClick={() => document.getElementById('co-creation')?.scrollIntoView({ behavior: 'smooth' })}>
                   查看我的参与
@@ -1034,6 +1044,8 @@ export default function DiscussionPage() {
       </Box>
 
       <SubmissionModal isOpen={isOpen} onClose={onClose} defaultTopicId={selectedTopicId} defaultTrack={selectedTrack} />
+      <ChatRoomModal isOpen={chatRoom.isOpen} onClose={chatRoom.onClose} />
+      <RoundTableModal isOpen={roundTable.isOpen} onClose={roundTable.onClose} />
     </MotionBox>
   )
 }

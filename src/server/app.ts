@@ -26,6 +26,7 @@ import teacherRouter from './routes/teacher'
 import uploadRouter from './routes/upload'
 import immersiveRouter from './routes/immersive'
 import aiRouter from './routes/ai'
+import chatroomRouter from './routes/chatroom'
 
 // ===== 数据库初始化（先完成建表再启动 HTTP）=====
 const dbType = process.env.DB_TYPE || 'sqlite'
@@ -94,6 +95,7 @@ app.use('/api/v1/teacher', teacherRouter)
 app.use('/api/v1', uploadRouter)
 app.use('/api/v1/immersive', immersiveRouter)
 app.use('/api/v1/ai', aiRouter)
+app.use('/api/v1/chatroom', chatroomRouter)
 
 // ===== 生产：前端静态文件 =====
 setupStatic(app)
