@@ -157,6 +157,51 @@ export default function ClassicsPage() {
 
   return (
     <Box maxW="1200px">
+      <Flex
+        mb={4}
+        px={4}
+        py={3}
+        bg="white"
+        border="1px solid"
+        borderColor="brand.light"
+        borderRadius="lg"
+        align="center"
+        justify="space-between"
+        gap={4}
+        flexWrap="wrap"
+      >
+        <Box>
+          <Text fontSize="sm" fontWeight={700} color="brand.primary">典籍原文资料包</Text>
+          <Text fontSize="xs" color="gray.500" mt={1}>可下载完整典籍检索包和配套附件</Text>
+        </Box>
+        <HStack spacing={2}>
+          <Button
+            as="a"
+            href={encodeURI('/materials/典籍原文/01-典籍检索包.docx')}
+            target="_blank"
+            rel="noreferrer"
+            size="sm"
+            variant="outline"
+            colorScheme="green"
+            leftIcon={<Text>📄</Text>}
+          >
+            检索包
+          </Button>
+          <Button
+            as="a"
+            href={encodeURI('/materials/典籍原文/附件.docx')}
+            target="_blank"
+            rel="noreferrer"
+            size="sm"
+            variant="outline"
+            colorScheme="green"
+            leftIcon={<Text>📎</Text>}
+          >
+            附件
+          </Button>
+        </HStack>
+      </Flex>
+
       {/* 搜索 + 视图切换 */}
       <Flex justify="space-between" align="center" mb={4} gap={4}>
         <Box position="relative" maxW="420px" flex={1}>

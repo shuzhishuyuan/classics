@@ -64,6 +64,14 @@ export type FamilyScenario =
   | '日常熏陶'
   | '节日专题'
 
+export type ResourceAssetKind = 'video' | 'audio' | 'document' | 'image'
+
+export interface ResourceAsset {
+  label: string
+  url: string
+  kind: ResourceAssetKind
+}
+
 // ===== 核心资源类型 =====
 
 export interface ResourceItem {
@@ -94,6 +102,8 @@ export interface ResourceItem {
   readingMethod?: ReadingMethod
   /** 学习资源特有 */
   learningTime?: string
+  /** 真实资料附件 */
+  assets?: ResourceAsset[]
 }
 
 // ===== 文化拓展（五大书院地域文化） =====

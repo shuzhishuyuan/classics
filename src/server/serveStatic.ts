@@ -20,6 +20,10 @@ export function setupStatic(app: express.Express) {
   const uploadsDir = path.resolve(process.cwd(), 'server', 'data', 'uploads')
   app.use('/uploads', express.static(uploadsDir))
 
+  app.use('/materials', express.static(path.join(distDir, 'materials')), (_req, res) => {
+    res.status(404).json({ message: '资源文件不存在，请检查部署时是否完整下载并构建了资料。' })
+  })
+
   // 前端构建产物
   app.use(express.static(distDir))
 

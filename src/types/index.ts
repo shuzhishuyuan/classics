@@ -96,6 +96,8 @@ export interface Classic {
   publishDate: number
   popularity: number
   practiceTasks?: string[]
+  /** 典籍原件或相关扫描图 */
+  sourceAssets?: { label: string; url: string }[]
 }
 
 // ===== 筛选/排序 =====

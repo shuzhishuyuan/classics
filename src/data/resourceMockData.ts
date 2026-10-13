@@ -5,6 +5,7 @@
  */
 
 import type { ResourceItem, AcademyCulture } from '../types/resource'
+import { resourceAssetsById } from './resourceAssets'
 
 // ============================================================
 // 一、名师微课资源
@@ -199,6 +200,25 @@ export const featuredCoursesData: ResourceItem[] = [
     hasDownload: true,
     hasExercise: true,
   },
+  {
+    id: 'course-11',
+    title: '湖湘学派——书院讲学与经世致用',
+    category: '名师微课',
+    type: '视频',
+    stage: ['高中'],
+    duration: '30分钟',
+    teacher: '周文渊 教授',
+    courseTopic: '书院历史',
+    tags: ['湖湘学派', '书院讲学', '经世致用', '湖湘文化'],
+    description:
+      '围绕湖湘学派的形成、代表人物与书院讲学传统，梳理湖湘文化中经世致用、实事求是的思想脉络，帮助学习者理解书院教育与地方文化精神之间的关系。',
+    downloads: 4600,
+    rating: 4.7,
+    updatedAt: '2026-10-11',
+    coverEmoji: '⛰️',
+    hasDownload: true,
+    hasExercise: true,
+  },
 ]
 
 // ============================================================
@@ -373,6 +393,23 @@ export const teacherPrepData: ResourceItem[] = [
     rating: 4.6,
     updatedAt: '2026-02-28',
     coverEmoji: '🖌️',
+  },
+  {
+    id: 'prep-11',
+    title: '教师备课补充资源包',
+    category: '教师备课',
+    subCategory: '教学资源包',
+    type: '教学课件',
+    stage: ['小学高段', '初中', '高中'],
+    subject: '校本课程',
+    format: 'DOC',
+    tags: ['教师备课', '书院文化', '校本课程', '教学素材'],
+    description:
+      '教师备课补充材料，作为书院文化课程、主题班会和校本课程设计的辅助参考文件使用。',
+    downloads: 1200,
+    rating: 4.4,
+    updatedAt: '2026-10-11',
+    coverEmoji: '🗂️',
   },
 ]
 
@@ -684,6 +721,16 @@ export const parentChildReadingData: ResourceItem[] = [
     coverEmoji: '🗺️',
   },
 ]
+
+for (const resource of [
+  ...featuredCoursesData,
+  ...teacherPrepData,
+  ...studentLearningData,
+  ...parentChildReadingData,
+]) {
+  const assets = resourceAssetsById[resource.id]
+  if (assets) resource.assets = assets
+}
 
 // ============================================================
 // 五、文化拓展——五大书院地域文化

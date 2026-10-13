@@ -48,6 +48,7 @@ export default function DocumentPreview({ resource }: DocumentPreviewProps) {
 
   const pages = getMockDocumentPages(resource)
   const totalPages = pages.length
+  const documentAsset = resource.assets?.find((asset) => asset.kind === 'document')
   const isPDF = resource.format?.toUpperCase().includes('PDF')
   const isDOCX = resource.format?.toUpperCase().includes('DOCX')
   const fileIcon = isPDF ? '📕' : isDOCX ? '📘' : '📄'
@@ -108,6 +109,22 @@ export default function DocumentPreview({ resource }: DocumentPreviewProps) {
             </Tooltip>
 
             <Divider orientation="vertical" h="20px" borderColor="blackAlpha.200" />
+
+            {documentAsset && (
+              <Button
+                as="a"
+                href={encodeURI(documentAsset.url)}
+                target="_blank"
+                rel="noreferrer"
+                size="sm"
+                variant="outline"
+                colorScheme="green"
+                borderRadius="full"
+                leftIcon={<Text>↗</Text>}
+              >
+                打开原件
+              </Button>
+            )}
 
             {/* 下载 */}
             <Button

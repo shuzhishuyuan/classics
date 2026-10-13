@@ -4,6 +4,7 @@ import {
   Flex, useToast, Spinner, Avatar, IconButton,
 } from '@chakra-ui/react'
 import { fetchSharedResources, createSharedResource } from '../api/resources'
+import { localSharedResources } from '../data/sharedMaterialData'
 
 const TAG_OPTIONS = ['书院历史', '学规解读', '先贤精神', '经典导读', '教案', '试题', '活动方案', '艺术创作', '其他']
 const CATEGORY_OPTIONS = [
@@ -38,7 +39,19 @@ export default function SharedResourceSection() {
     if (keyword) params.keyword = keyword
     if (filterCategory) params.category = filterCategory
     fetchSharedResources(params).then(res => {
-      if (res.code === 200) setResources(res.data.list)
+      const local = localSharedResources.filter((resource) => {
+        const categoryMatch = !filterCategory || resource.category === filterCategory
+        const keywordMatch = !keyword ||
+          resource.title.includes(keyword) ||
+          resource.description.includes(keyword) ||
+          resource.tags.some((tag) => tag.includes(keyword))
+        return categoryMatch && keywordMatch
+      })
+      if (res.code === 200) setResources([...local, ...res.data.list])
+      else setResources(local)
+      setLoading(false)
+    }).catch(() => {
+      setResources(localSharedResources)
       setLoading(false)
     })
   }
